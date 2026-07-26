@@ -95,6 +95,22 @@ export const purchaseCourse = async (req, res) => {
             return res.json({ success: false, message: purchaseError.message })
         }
 
+        // If Stripe is not configured, complete purchase directly
+        if (!process.env.STRIPE_SECRET_KEY) {
+            await supabase.from('purchases').update({ status: 'completed' }).eq('id', newPurchase.id)
+
+            // Add course to user's enrolled courses
+            const updatedCourses = [...(userData.enrolled_courses || []), courseId]
+            await supabase.from('users').update({ enrolled_courses: updatedCourses }).eq('id', userId)
+
+            // Add user to course's enrolled students
+            const { data: course } = await supabase.from('courses').select('enrolled_students').eq('id', courseId).single()
+            const updatedStudents = [...(course.enrolled_students || []), userId]
+            await supabase.from('courses').update({ enrolled_students: updatedStudents }).eq('id', courseId)
+
+            return res.json({ success: true, message: 'Course enrolled successfully' })
+        }
+
         // Stripe gateway initialize
         const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
         const currency = process.env.CURRENCY.toLowerCase()

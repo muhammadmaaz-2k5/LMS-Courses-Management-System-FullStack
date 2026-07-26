@@ -73,9 +73,13 @@ export const clerkWebhooks = async (req, res) => {
     }
 };
 
-const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+const stripeInstance = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 export const stripeWebhooks = async (request, response) => {
+    if (!stripeInstance) {
+        return response.status(400).json({ success: false, message: 'Stripe not configured' })
+    }
+
     const sig = request.headers['stripe-signature'];
 
     let event;
