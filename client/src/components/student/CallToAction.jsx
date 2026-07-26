@@ -18,16 +18,16 @@ const CallToAction = () => {
 				Get Startd
 			</p>
 			<div className="flex items-center font-medium gap-6 mt-4">
-				{/* <button className='px-10 py-3 rounded-md text-white bg-blue-600'>Get started</button> */}
+				{/* <button className='px-10 py-3 rounded-md text-white bg-green-600'>Get started</button> */}
 				{user ? (
-					<a href="#" className="px-10 py-3 rounded-md text-white bg-blue-600">
+					<a href="#" className="px-10 py-3 rounded-md text-white bg-green-600">
 						{" "}
 						Get Startd
 					</a>
 				) : (
 					<button
 						onClick={() => openSignIn()}
-						className="px-10 py-3 rounded-md text-white bg-blue-600"
+						className="px-10 py-3 rounded-md text-white bg-green-600"
 					>
 						Get Started
 					</button>

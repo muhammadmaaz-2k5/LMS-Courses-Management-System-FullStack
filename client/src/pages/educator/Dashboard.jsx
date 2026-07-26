@@ -47,7 +47,7 @@ const Dashboard = () => {
 				</div>
 				{/* Responsive Grid for Cards */}
 				<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 items-center w-full">
-					<div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-full rounded-md">
+					<div className="flex items-center gap-3 shadow-card border border-green-500 p-4 w-full rounded-md">
 						<img src={assets.patients_icon} alt="patients_icon" />
 						<div>
 							<p className="text-2xl font-medium text-gray-600">
@@ -57,7 +57,7 @@ const Dashboard = () => {
 						</div>
 					</div>
 
-					<div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-full rounded-md">
+					<div className="flex items-center gap-3 shadow-card border border-green-500 p-4 w-full rounded-md">
 						<img src={assets.appointments_icon} alt="appointments_icon" />
 						<div>
 							<p className="text-2xl font-medium text-gray-600">
@@ -68,7 +68,7 @@ const Dashboard = () => {
 					</div>
 
 					{/* Fixed Total Earnings Issue */}
-					<div className="flex items-center gap-3 shadow-card border border-blue-500 p-4 w-full rounded-md">
+					<div className="flex items-center gap-3 shadow-card border border-green-500 p-4 w-full rounded-md">
 						<img src={assets.earning_icon} alt="earning_icon" />
 						<div className="whitespace-nowrap">
 							<p className="text-2xl font-medium text-gray-600 text-nowrap">

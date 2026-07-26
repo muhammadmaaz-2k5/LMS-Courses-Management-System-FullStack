@@ -40,7 +40,7 @@ const ContactForm = () => {
               id="email"
               type="email"
               name="email"
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300"
               required
             />
             <ValidationError
@@ -59,7 +59,7 @@ const ContactForm = () => {
             <textarea
               id="message"
               name="message"
-              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-300"
+              className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 transition duration-300"
               required
             />
             <ValidationError
@@ -74,7 +74,7 @@ const ContactForm = () => {
           <button
             type="submit"
             disabled={state.submitting}
-            className="w-full p-3 bg-blue-600 text-white font-semibold rounded-md hover:bg-blue-700 transition duration-300 disabled:opacity-50"
+            className="w-full p-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition duration-300 disabled:opacity-50"
           >
             Submit
           </button>

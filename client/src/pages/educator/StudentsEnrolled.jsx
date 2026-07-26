@@ -67,7 +67,7 @@ const StudentsEnrolled = () => {
 										<img
 											src={item?.student?.imageUrl || "/student.png"}
 											alt="image url"
-											className="w-9 h-9 rounded-full bg-teal-200/40 object-cover"
+											className="w-9 h-9 rounded-full bg-green-200/40 object-cover"
 										/>
 										<span className="truncate">
 											{item?.student?.name || "Unknown Student"}

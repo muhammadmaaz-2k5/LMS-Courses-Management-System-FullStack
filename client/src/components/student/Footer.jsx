@@ -80,7 +80,7 @@ const Footer = () => {
 						/>
 						<button
 							onClick={handleSubscribe}
-							className="bg-blue-600 w-2/4 h-9 text-white rounded"
+							className="bg-green-600 w-2/4 h-9 text-white rounded"
 						>
 							Subscribe
 						</button>

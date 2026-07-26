@@ -113,7 +113,7 @@ const MyEnrollMents = () => {
 								</td>
 								<td className="px-3 py-3 max-sm:text-right">
 									<button
-										className="px-3 sm:px-5 py-1.5 sm:py-2 bg-blue-600 max-sm:text-xs text-white"
+										className="px-3 sm:px-5 py-1.5 sm:py-2 bg-green-600 max-sm:text-xs text-white"
 										onClick={() => navigate("/player/" + course._id)}
 									>
 										{progressArray[index] &&

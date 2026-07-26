@@ -480,7 +480,7 @@ const Player = () => {
 																			lecture: i + 1,
 																		})
 																	}
-																	className="text-blue-500 cursor-pointer"
+																	className="text-green-500 cursor-pointer"
 																>
 																	Watch
 																</p>
@@ -533,7 +533,7 @@ const Player = () => {
 								</p>
 								<button
 									onClick={() => markLectureAsCompleted(playerData.lectureId)}
-									className="text-blue-600"
+className="text-green-600"
 								>
 									{progressData &&
 									progressData.lectureCompleted.includes(playerData.lectureId)
@@ -557,7 +557,7 @@ const Player = () => {
 							{/* dark overlay to make play icon pop */}
 							<div className="absolute inset-0 flex items-center justify-center">
 								<div
-									className="flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-teal-400 shadow-xl transform transition-transform duration-300 hover:shadow-2xl cursor-pointer"
+									className="flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-green-400 shadow-xl transform transition-transform duration-300 hover:shadow-2xl cursor-pointer"
 								>
 									<img
 										src={assets.play_icon}

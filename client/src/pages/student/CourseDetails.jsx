@@ -89,8 +89,8 @@ const CourseDetails = () => {
 
 	return courseData ? (
 		<>
-			<div className="flex md:flex-row flex-col-reverse gap-10 relative items-start justify-between md:px-36 px-8 md:placeholder-teal-300 pt-20 text-left">
-				<div className="absolute top-0 left-0 w-full h-section-height -z-1 bg-gradient-to-b from-cyan-100/70"></div>
+			<div className="flex md:flex-row flex-col-reverse gap-10 relative items-start justify-between md:px-36 px-8 md:placeholder-green-300 pt-20 text-left">
+				<div className="absolute top-0 left-0 w-full h-section-height -z-1 bg-gradient-to-b from-green-100/70"></div>
 
 				{/* left column */}
 				<div className="max-w-xl z-10 text-gray-500">
@@ -121,7 +121,7 @@ const CourseDetails = () => {
 								/>
 							))}
 						</div>
-						<p className="text-blue-600">
+						<p className="text-green-600">
 							({courseData.courseRatings.length}{" "}
 							{courseData.courseRatings.length > 1 ? "ratings" : "rating"})
 						</p>
@@ -133,7 +133,7 @@ const CourseDetails = () => {
 					</div>
 					<p className="text-sm">
 						Course by{" "}
-						<span className="text-blue-600 underline">
+						<span className="text-green-600 underline">
 							{courseData.educator.name}
 						</span>
 					</p>
@@ -215,7 +215,7 @@ const CourseDetails = () => {
 																				.pop(),
 																		})
 																	}
-																	className="text-blue-500 cursor-pointer"
+																	className="text-green-500 cursor-pointer"
 																>
 																	Preview
 																</p>
@@ -317,20 +317,20 @@ const CourseDetails = () => {
 							
 						>
 							{isAlreadyEnrolled
-								? <p className="md:mt-6 mt-4 w-full py-3 rounded text-center  bg-blue-600 text-white font-medium"> Already Enrolled </p>
+								? <p className="md:mt-6 mt-4 w-full py-3 rounded text-center  bg-green-600 text-white font-medium"> Already Enrolled </p>
 								: courseData.coursePrice -
 										(courseData.discount * courseData.coursePrice) / 100 ===
 								  0.00
-								? <p className="md:mt-6 mt-4 w-full py-3 rounded text-center  bg-blue-600 text-white font-medium"> Free </p>
-								: <button onClick={enrollCourse} className="md:mt-6 mt-4 w-full py-3 rounded text-center  bg-blue-600 text-white font-medium"> Enroll Now</button>}
+								? <p className="md:mt-6 mt-4 w-full py-3 rounded text-center  bg-green-600 text-white font-medium"> Free </p>
+								: <button onClick={enrollCourse} className="md:mt-6 mt-4 w-full py-3 rounded text-center  bg-green-600 text-white font-medium"> Enroll Now</button>}
 						</div>
 
 						<div >
 							{courseData.coursePrice -
 								(courseData.discount * courseData.coursePrice) / 100 ===
 							0.00 ? (
-								<p className="md:mt-6 mt-4 w-full text-center py-3 rounded  bg-blue-600 text-white font-medium">Click on Course structure </p>
-							) : isAlreadyEnrolled ? <Link  to="/my-enrollments"><p className="md:mt-6 mt-4 w-full text-center py-3 rounded  bg-blue-600 text-white font-medium">My Enrollments</p> </Link> : ""}
+								<p className="md:mt-6 mt-4 w-full text-center py-3 rounded  bg-green-600 text-white font-medium">Click on Course structure </p>
+							) : isAlreadyEnrolled ? <Link  to="/my-enrollments"><p className="md:mt-6 mt-4 w-full text-center py-3 rounded  bg-green-600 text-white font-medium">My Enrollments</p> </Link> : ""}
 						</div>
 
 						<div className="pt-6">

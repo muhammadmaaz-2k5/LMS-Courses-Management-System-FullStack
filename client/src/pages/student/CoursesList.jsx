@@ -36,7 +36,7 @@ const CoursesList = () => {
 						<p className="text-gray-500">
 							<span
 								onClick={() => navigate("/")}
-								className="text-blue-600 cursor-pointer"
+								className="text-green-600 cursor-pointer"
 							>
 								Home{" "}
 							</span>{" "}

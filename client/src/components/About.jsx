@@ -9,7 +9,7 @@ const About = () => {
 
 	return (
 		<>
-			<div className="w-full mx-auto px-6 py-12 bg-gradient-to-b from-cyan-100/40">
+			<div className="w-full mx-auto px-6 py-12 bg-gradient-to-b from-green-100/40">
 				<h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
 					About Maaz LMS
 				</h1>
@@ -73,11 +73,11 @@ const About = () => {
 					</p>
 
 					{user ? (
-						<Link to="/" className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"> Get Startd</Link>
+						<Link to="/" className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-300"> Get Startd</Link>
 					) : (
 						<button
 							onClick={() => openSignIn()}
-							className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition duration-300"
+							className="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition duration-300"
 						>
 							Get Started
 						</button>

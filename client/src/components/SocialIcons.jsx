@@ -15,7 +15,7 @@ const SocialIcons = () => {
       <Link
         target='_blank'
         to='https://www.facebook.com/profile.php?id=100026766931684'
-        className="group transition transform hover:scale-110 text-[#0b16f1] hover:text-blue-500"
+        className="group transition transform hover:scale-110 text-[#0b16f1] hover:text-green-500"
       >
         <FacebookLogo size={34} weight="fill" className="transition-colors duration-300" />
       </Link>
@@ -29,7 +29,7 @@ const SocialIcons = () => {
       <Link
         target='_blank'
         to='https://www.linkedin.com/in/gyan-pratap-singh-275785236/'
-        className="group transition transform hover:scale-110 text-[#1e17ea] hover:text-blue-600"
+        className="group transition transform hover:scale-110 text-[#1e17ea] hover:text-green-600"
       >
         <LinkedinLogo size={34} weight="fill" className="transition-colors duration-300" />
       </Link>

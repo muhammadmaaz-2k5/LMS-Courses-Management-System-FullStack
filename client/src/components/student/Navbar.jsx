@@ -42,7 +42,7 @@ const Navbar = () => {
 	return (
 		<div
 			className={`flex items-center justify-between px-4 sm:px-10 md:px-14 lg:px-36 border-b border-gray-500 py-3 ${
-				isCourseListPage ? "bg-white" : "bg-cyan-100/70"
+				isCourseListPage ? "bg-white" : "bg-green-100/70"
 			} `}
 		>
 			<img onClick={()=>navigate('/')}
@@ -59,7 +59,7 @@ const Navbar = () => {
 					<Link
 						to="https://go-projects-gps.vercel.app/"
 						target="_blank"
-						className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium text-indigo-600 shadow-sm transition-colors hover:bg-accent hover:text-indigo-700"
+						className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium text-green-600 shadow-sm transition-colors hover:bg-accent hover:text-green-700"
 					>
 						<ExternalLink className="h-4 w-4 text-green-500" />
 						<span>Go Project</span>
@@ -86,7 +86,7 @@ const Navbar = () => {
 				) : (
 					<button
 						onClick={() => openSignIn()}
-						className="bg-blue-600 text-white px-5 py-2 rounded-full"
+						className="bg-green-600 text-white px-5 py-2 rounded-full"
 					>
 						Create Account
 					</button>
@@ -116,7 +116,7 @@ const Navbar = () => {
 				<Link
 					to="https://go-projects-gps.vercel.app/"
 					target="_blank"
-					className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium text-indigo-600 shadow-sm transition-colors hover:bg-accent hover:text-indigo-700"
+					className="flex items-center gap-2 rounded-md border border-input bg-background px-3 py-2 text-sm font-medium text-green-600 shadow-sm transition-colors hover:bg-accent hover:text-green-700"
 				>
 					<ExternalLink className="h-4 w-4 text-green-500" />
 					<span>Go Project</span>
