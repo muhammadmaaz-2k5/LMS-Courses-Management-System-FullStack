@@ -1,0 +1,40 @@
+{
+  "phases": [
+    {
+      "id": "phase-1",
+      "name": "Foundation",
+      "description": "Project setup, authentication, and data models",
+      "cycles": ["cycle-1", "cycle-2"],
+      "status": "completed",
+      "startDate": "2026-01-01",
+      "endDate": "2026-01-28"
+    },
+    {
+      "id": "phase-2",
+      "name": "Core Features",
+      "description": "Course management, enrollment, and payment processing",
+      "cycles": ["cycle-3", "cycle-4", "cycle-5"],
+      "status": "in-progress",
+      "startDate": "2026-01-29",
+      "endDate": "2026-03-11"
+    },
+    {
+      "id": "phase-3",
+      "name": "User Experience",
+      "description": "Dashboard, analytics, and student-facing UI",
+      "cycles": ["cycle-6", "cycle-7"],
+      "status": "pending",
+      "startDate": "2026-03-12",
+      "endDate": "2026-04-08"
+    },
+    {
+      "id": "phase-4",
+      "name": "Release",
+      "description": "Testing, polish, and deployment",
+      "cycles": ["cycle-8"],
+      "status": "pending",
+      "startDate": "2026-04-09",
+      "endDate": "2026-04-22"
+    }
+  ]
+}

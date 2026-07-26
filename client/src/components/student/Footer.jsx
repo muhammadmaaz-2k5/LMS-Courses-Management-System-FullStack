@@ -22,16 +22,16 @@ const Footer = () => {
 				<div className="flex flex-col md:items-start items-center w-full">
 					{/* <img src={assets.logo_dark} alt="logo" />
 					<p className="mt- text-center sm:flex sm:flex-row sm:justify-center  md:text-left text-sm text-white/80">
-						Edemy LMS makes education accessible and engaging, connecting
+						Maaz LMS makes education accessible and engaging, connecting
 						students with educators through quality courses, interactive tools,
 						and intuitive design.
 					</p> */}
 
 
-					<img className="w-auto h-28 transition-all duration-300 hover:opacity-100 hover:scale-105" src='/edemylms.png' alt="logo" />
-					
+					<img className="w-auto h-28 transition-all duration-300 hover:opacity-100 hover:scale-105" src='/Maazlms.png' alt="logo" />
+
 					<p className="mt- text-center sm:flex sm:flex-row sm:justify-center  md:text-left text-sm text-white/80">
-						Edemy LMS makes education accessible and engaging, connecting
+						Maaz LMS makes education accessible and engaging, connecting
 						students with educators through quality courses, interactive tools,
 						and intuitive design.
 					</p>
@@ -57,9 +57,9 @@ const Footer = () => {
 						<li>
 							<Link to="/privacy-policy">Privacy policy</Link>
 						</li>
-						
 
-						
+
+
 
 					</ul>
 				</div>
@@ -87,12 +87,12 @@ const Footer = () => {
 					</div>
 					<div className=" ml-8 mt-5 md:ml-0 md:mt-0">
 
-					<SocialIcons />
+						<SocialIcons />
 					</div>
 				</div>
 			</div>
 			<p className="py-4 text-center text-xs md:text-sm text-white/60">
-				Copyright 2025 © Edemy by GPS. All Right Reserved.
+				Copyright 2025 © Maaz by GPS. All Right Reserved.
 			</p>
 		</footer>
 	);

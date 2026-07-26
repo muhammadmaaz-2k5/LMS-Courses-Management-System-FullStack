@@ -1,0 +1,178 @@
+{
+  "cycles": [
+    {
+      "id": "cycle-1",
+      "name": "Project Setup & Architecture",
+      "status": "completed",
+      "startDate": "2026-01-01",
+      "endDate": "2026-01-14",
+      "durationDays": 14,
+      "goals": [
+        "Initialize monorepo structure with client and server",
+        "Set up Vite + React frontend with Tailwind CSS",
+        "Set up Express backend with MongoDB connection",
+        "Configure Clerk authentication",
+        "Set up environment variables and .gitignore"
+      ],
+      "deliverables": [
+        "client/package.json",
+        "server/package.json",
+        "server/server.js",
+        "client/src/App.jsx",
+        "client/src/main.jsx"
+      ],
+      "assignee": "Dev Lead"
+    },
+    {
+      "id": "cycle-2",
+      "name": "User Authentication & Core Models",
+      "status": "completed",
+      "startDate": "2026-01-15",
+      "endDate": "2026-01-28",
+      "durationDays": 14,
+      "goals": [
+        "Implement Clerk-based user authentication",
+        "Create User, Course, Purchase, and CourseProgress models",
+        "Set up Clerk webhooks for user lifecycle",
+        "Implement user data retrieval endpoints"
+      ],
+      "deliverables": [
+        "server/models/User.js",
+        "server/models/Course.js",
+        "server/models/Purchase.js",
+        "server/models/CourseProgress.js",
+        "server/controllers/userController.js",
+        "server/controllers/webhooks.js",
+        "server/routes/userRoutes.js"
+      ],
+      "assignee": "Backend Lead"
+    },
+    {
+      "id": "cycle-3",
+      "name": "Course Management (CRUD)",
+      "status": "in-progress",
+      "startDate": "2026-01-29",
+      "endDate": "2026-02-11",
+      "durationDays": 14,
+      "goals": [
+        "Implement course creation with thumbnail upload via Cloudinary",
+        "Build course listing and detail endpoints",
+        "Add course content structure with chapters and lectures",
+        "Implement educator role assignment and protection"
+      ],
+      "deliverables": [
+        "server/controllers/courseController.js",
+        "server/controllers/educatorController.js",
+        "server/routes/courseRoute.js",
+        "server/routes/educatorRoutes.js",
+        "server/middlewares/authMiddleware.js",
+        "server/configs/cloudinary.js",
+        "server/configs/multer.js"
+      ],
+      "assignee": "Backend Lead"
+    },
+    {
+      "id": "cycle-4",
+      "name": "Student Enrollment & Progress Tracking",
+      "status": "pending",
+      "startDate": "2026-02-12",
+      "endDate": "2026-02-25",
+      "durationDays": 14,
+      "goals": [
+        "Implement course purchase flow with Stripe checkout",
+        "Track student enrollment and course progress",
+        "Build lecture completion tracking",
+        "Implement user course progress retrieval"
+      ],
+      "deliverables": [
+        "server/controllers/userController.js (purchase, progress)",
+        "server/models/Purchase.js",
+        "server/models/CourseProgress.js"
+      ],
+      "assignee": "Backend Lead"
+    },
+    {
+      "id": "cycle-5",
+      "name": "Payment Integration (Stripe)",
+      "status": "pending",
+      "startDate": "2026-02-26",
+      "endDate": "2026-03-11",
+      "durationDays": 14,
+      "goals": [
+        "Integrate Stripe checkout for course purchases",
+        "Implement Stripe webhook handlers for payment success/failure",
+        "Update purchase status on payment completion",
+        "Enroll students in courses on successful payment"
+      ],
+      "deliverables": [
+        "server/controllers/webhooks.js (stripeWebhooks)",
+        "Stripe checkout session creation in userController.js"
+      ],
+      "assignee": "Backend Lead"
+    },
+    {
+      "id": "cycle-6",
+      "name": "Educator Dashboard & Analytics",
+      "status": "pending",
+      "startDate": "2026-03-12",
+      "endDate": "2026-03-25",
+      "durationDays": 14,
+      "goals": [
+        "Build educator dashboard with total earnings, courses, and students",
+        "Implement enrolled students listing with purchase data",
+        "Add course rating and review system",
+        "Create educator-specific routes and middleware"
+      ],
+      "deliverables": [
+        "server/controllers/educatorController.js (dashboard, students)",
+        "client/src/pages/educator/Dashboard.jsx",
+        "client/src/pages/educator/MyCourses.jsx",
+        "client/src/pages/educator/StudentsEnrolled.jsx"
+      ],
+      "assignee": "Full Stack"
+    },
+    {
+      "id": "cycle-7",
+      "name": "Frontend UI & Student Pages",
+      "status": "pending",
+      "startDate": "2026-03-26",
+      "endDate": "2026-04-08",
+      "durationDays": 14,
+      "goals": [
+        "Build student home page with course listings",
+        "Implement course detail and player pages",
+        "Create enrollment and progress tracking UI",
+        "Add search, filtering, and responsive design"
+      ],
+      "deliverables": [
+        "client/src/pages/student/Home.jsx",
+        "client/src/pages/student/CoursesList.jsx",
+        "client/src/pages/student/CourseDetails.jsx",
+        "client/src/pages/student/Player.jsx",
+        "client/src/pages/student/MyEnrollMents.jsx",
+        "client/src/components/student/*.jsx"
+      ],
+      "assignee": "Frontend Lead"
+    },
+    {
+      "id": "cycle-8",
+      "name": "Testing, Polish & Deployment",
+      "status": "pending",
+      "startDate": "2026-04-09",
+      "endDate": "2026-04-22",
+      "durationDays": 14,
+      "goals": [
+        "Write tests for backend controllers and routes",
+        "End-to-end testing of key user flows",
+        "Performance optimization and bug fixes",
+        "Deploy to Vercel (frontend) and server (backend)"
+      ],
+      "deliverables": [
+        "Test files for all controllers",
+        "Vercel deployment configuration",
+        "Production environment setup"
+      ],
+      "assignee": "QA + Dev Lead"
+    }
+  ]
+}

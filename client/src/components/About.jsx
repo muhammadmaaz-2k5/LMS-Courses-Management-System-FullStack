@@ -6,12 +6,12 @@ import { Link } from "react-router-dom";
 const About = () => {
 	const { user } = useUser();
 	const { openSignIn } = useClerk();
-	
+
 	return (
 		<>
 			<div className="w-full mx-auto px-6 py-12 bg-gradient-to-b from-cyan-100/40">
 				<h1 className="text-4xl font-bold text-center text-gray-800 mb-6">
-					About Edemy LMS
+					About Maaz LMS
 				</h1>
 				<p className="text-lg text-gray-600 text-center mb-8">
 					Empowering learners and educators with a seamless online learning
@@ -24,7 +24,7 @@ const About = () => {
 						Our Mission
 					</h2>
 					<p className="text-gray-600">
-						At Edemy LMS, we strive to make education accessible and engaging
+						At Maaz LMS, we strive to make education accessible and engaging
 						for everyone. Our platform bridges the gap between students and
 						educators by providing high-quality courses, interactive learning
 						tools, and an intuitive user experience.
@@ -64,11 +64,11 @@ const About = () => {
 				{/* Section: Join Us */}
 				<div className="mt-12 text-center">
 					<h2 className="text-2xl font-semibold text-gray-700 mb-4">
-						Join Edemy LMS Today
+						Join Maaz LMS Today
 					</h2>
 					<p className="text-gray-600 mb-6">
 						Whether you're a student looking to enhance your skills or an
-						educator wanting to share knowledge, Edemy LMS is the perfect
+						educator wanting to share knowledge, Maaz LMS is the perfect
 						platform for you.
 					</p>
 

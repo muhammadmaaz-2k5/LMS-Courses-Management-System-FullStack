@@ -1,0 +1,58 @@
+{
+  "milestones": [
+    {
+      "id": "m1",
+      "name": "MVP Ready",
+      "targetCycle": "cycle-3",
+      "targetDate": "2026-02-11",
+      "status": "in-progress",
+      "criteria": [
+        "User authentication working (Clerk)",
+        "Course CRUD operations functional",
+        "Basic frontend with home, course list, and course detail pages",
+        "Educator role assignment working"
+      ]
+    },
+    {
+      "id": "m2",
+      "name": "Payment Flow Complete",
+      "targetCycle": "cycle-5",
+      "targetDate": "2026-03-11",
+      "status": "pending",
+      "criteria": [
+        "Stripe checkout integration working",
+        "Payment webhook handlers functional",
+        "Student enrollment on successful payment",
+        "Purchase status tracking (pending, completed, failed)"
+      ]
+    },
+    {
+      "id": "m3",
+      "name": "Full Platform",
+      "targetCycle": "cycle-7",
+      "targetDate": "2026-04-08",
+      "status": "pending",
+      "criteria": [
+        "All pages implemented and responsive",
+        "Educator dashboard with analytics",
+        "Course rating and review system",
+        "Student progress tracking UI",
+        "Search and filtering functional"
+      ]
+    },
+    {
+      "id": "m4",
+      "name": "Production Release",
+      "targetCycle": "cycle-8",
+      "targetDate": "2026-04-22",
+      "status": "pending",
+      "criteria": [
+        "All tests passing",
+        "Deployed to Vercel",
+        "No critical bugs",
+        "Environment variables configured for production",
+        "Documentation complete"
+      ]
+    }
+  ]
+}

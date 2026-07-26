@@ -24,19 +24,19 @@ app.use(clerkMiddleware())
 
 
 // Routes
-app.get('/', (req,res)=>{res.send("Edemy API is working fine!")})
+app.get('/', (req, res) => { res.send("Maaz API is working fine!") })
 app.post('/clerk', express.json(), clerkWebhooks)
 app.use('/api/educator', express.json(), educatorRouter);
 app.use('/api/course', express.json(), courseRouter);
 app.use('/api/user', express.json(), userRouter);
-app.post('/stripe', express.raw({type: 'application/json'}), stripeWebhooks);
+app.post('/stripe', express.raw({ type: 'application/json' }), stripeWebhooks);
 
 
 
 // port
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, ()=> {
+app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`);
-    
+
 })

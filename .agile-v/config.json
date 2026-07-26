@@ -1,0 +1,51 @@
+{
+  "project": "Maaz LMS",
+  "version": "1.0.0",
+  "packageManager": "npm",
+  "nodeVersion": ">=18.0.0",
+  "environment": {
+    "frontend": {
+      "devPort": 5173,
+      "buildCommand": "vite build",
+      "devCommand": "vite",
+      "deployPlatform": "Vercel"
+    },
+    "backend": {
+      "devPort": 3000,
+      "startCommand": "node server.js",
+      "devCommand": "nodemon server.js",
+      "deployPlatform": "Vercel"
+    },
+    "database": {
+      "type": "MongoDB",
+      "defaultDB": "Maaz"
+    }
+  },
+  "auth": {
+    "provider": "Clerk",
+    "frontendPackage": "@clerk/clerk-react",
+    "backendPackage": "@clerk/express"
+  },
+  "payments": {
+    "provider": "Stripe",
+    "package": "stripe"
+  },
+  "storage": {
+    "provider": "Cloudinary",
+    "package": "cloudinary"
+  },
+  "webhooks": {
+    "providers": [
+      "Clerk",
+      "Stripe"
+    ],
+    "package": "svix"
+  },
+  "codeQuality": {
+    "linter": "ESLint 10",
+    "formatter": "Prettier (recommended)",
+    "cssLinter": "Tailwind CSS IntelliSense"
+  },
+  "apiPrefix": "/api",
+  "corsOrigin": "*"
+}
