@@ -20,17 +20,9 @@ const Footer = () => {
 		<footer className="bg-gray-900 md:px-36 text-left w-full mt-10">
 			<div className="flex flex-col md:flex-row items-start px-8 md:px-0 justify-center gap-10 md:gap-32 py-10 border-b border-white/30">
 				<div className="flex flex-col md:items-start items-center w-full">
-					{/* <img src={assets.logo_dark} alt="logo" />
-					<p className="mt- text-center sm:flex sm:flex-row sm:justify-center  md:text-left text-sm text-white/80">
-						Maaz LMS makes education accessible and engaging, connecting
-						students with educators through quality courses, interactive tools,
-						and intuitive design.
-					</p> */}
-
-
-					<img className="w-auto h-28 transition-all duration-300 hover:opacity-100 hover:scale-105" src='/Maazlms.png' alt="logo" />
-
-					<p className="mt- text-center sm:flex sm:flex-row sm:justify-center  md:text-left text-sm text-white/80">
+					<h1 className="text-2xl font-bold text-white tracking-wide">MUHAMMAD MAAZ</h1>
+					<p className="text-xs text-white/50 mt-1">Owner & Developer</p>
+					<p className="mt-4 text-center sm:flex sm:flex-row sm:justify-center  md:text-left text-sm text-white/80">
 						Maaz LMS makes education accessible and engaging, connecting
 						students with educators through quality courses, interactive tools,
 						and intuitive design.
