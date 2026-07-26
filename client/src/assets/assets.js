@@ -109,25 +109,25 @@ export const dummyEducatorData = {
 
 export const dummyTestimonial = [
     {
-        name: 'Sophia Carter',
-        role: 'Student @ AKTU',
-        image: assets.abhishek,
+        name: 'Muhammad Maaz',
+        role: 'Full Stack & AI Developer',
+        image: assets.profile_img,
         rating: 5,
-        feedback: 'Maaz LMS has revolutionized my teaching experience. The platform is intuitive, making course creation and student engagement seamless.',
+        feedback: 'Maaz LMS reflects my passion for building modern, scalable education platforms. I designed it with a focus on seamless learning, intuitive course management, and an excellent user experience for both instructors and students.',
     },
     {
-        name: 'Shreyansh Dubey',
-        role: 'Student @ KNIT',
-        image: assets.shreyansh,
-        rating: 4.8,
-        feedback: 'Maaz LMS provides an exceptional learning environment. The structured courses, real-time tracking, and user-friendly interface are top-notch.',
+        name: 'Muhammad Maaz',
+        role: 'MERN Stack Developer',
+        image: assets.profile_img_2,
+        rating: 5,
+        feedback: 'I built Maaz LMS using modern web technologies to deliver a fast, responsive, and feature-rich learning management system. From authentication to course management and progress tracking, every feature was developed with performance and scalability in mind.',
     },
     {
-        name: 'Olivia Martinez',
-        role: 'Software Engineer @ Microsoft',
+        name: 'Muhammad Maaz',
+        role: 'Founder & AI Engineer',
         image: assets.profile_img_3,
-        rating: 4.7,
-        feedback: 'Maaz LMS is a fantastic platform for upskilling. Its diverse course library and smooth UI make learning highly effective and engaging.',
+        rating: 5,
+        feedback: 'Maaz LMS combines modern UI, secure architecture, and powerful functionality to create an engaging online learning experience. My goal was to build a platform that empowers educators while making learning simple and accessible for everyone.',
     },
 ];
 
