@@ -18,6 +18,7 @@ import About from './components/About'
 import ContactForm from './components/ContactForm'
 import PrivacyPolicy from './components/PrivacyPolicy'
 import TestLogin from './pages/TestLogin'
+import EditCourse from './pages/educator/EditCourse'
 
 
 const App = () => {
@@ -50,6 +51,7 @@ const App = () => {
         <Route path='/educator' element={ <Educator />} >
             <Route path='/educator' element={<Dashboard />} />
             <Route path='add-course' element={<AddCourse />} />
+            <Route path='edit-course/:courseId' element={<EditCourse />} />
             <Route path='my-courses' element={<MyCourses />} />
             <Route path='student-enrolled' element={<StudentsEnrolled />} />
         </Route>

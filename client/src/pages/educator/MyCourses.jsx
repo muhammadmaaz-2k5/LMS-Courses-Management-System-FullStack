@@ -7,12 +7,12 @@ import Logger from "../../components/Logger";
 import Signature from "../../components/Signature";
 
 const MyCourses = () => {
-	const { currency, backendUrl, isEducator, getToken } = useContext(AppContext);
+	const { currency, backendUrl, isEducator, getToken, navigate } = useContext(AppContext);
 	const [courses, setCourses] = useState(null);
 
-	const fetchEducatorCourses = async () => {
-		const testUser = (() => { try { return JSON.parse(localStorage.getItem('testUser')) } catch { return null } })();
+	const testUser = (() => { try { return JSON.parse(localStorage.getItem('testUser')) } catch { return null } })();
 
+	const fetchEducatorCourses = async () => {
 		try {
 			if (testUser) {
 				const { data } = await axios.get(backendUrl + "/api/test/educator/courses/" + testUser.id);
@@ -26,6 +26,47 @@ const MyCourses = () => {
 			});
 
 			data.success && setCourses(data.courses);
+		} catch (error) {
+			toast.error(error.message);
+		}
+	};
+
+	const handleDelete = async (courseId) => {
+		if (!confirm("Are you sure you want to delete this course?")) return
+
+		try {
+			if (testUser) {
+				const { data } = await axios.delete(backendUrl + "/api/test/delete-course", {
+					data: { userId: testUser.id, courseId }
+				});
+				if (data.success) {
+					toast.success(data.message);
+					fetchEducatorCourses();
+				} else {
+					toast.error(data.message);
+				}
+				return
+			}
+			// TODO: Clerk auth delete
+		} catch (error) {
+			toast.error(error.message);
+		}
+	};
+
+	const handleTogglePublish = async (courseId) => {
+		try {
+			if (testUser) {
+				const { data } = await axios.put(backendUrl + "/api/test/toggle-publish", {
+					userId: testUser.id, courseId
+				});
+				if (data.success) {
+					toast.success(data.message);
+					fetchEducatorCourses();
+				} else {
+					toast.error(data.message);
+				}
+				return
+			}
 		} catch (error) {
 			toast.error(error.message);
 		}
@@ -48,17 +89,12 @@ const MyCourses = () => {
 					<table className="md:table-auto table-fixed w-full overflow-hidden">
 						<thead className="text-gray-900 border-b border-gray-500/20 text-sm text-left">
 							<tr>
-								<th className="px-4 py-3 font-semibold truncate">
-									All Courses
-								</th>
-								<th className="px-4 py-3 font-semibold truncate">
-									Courses Price
-								</th>
+								<th className="px-4 py-3 font-semibold truncate">Course</th>
+								<th className="px-4 py-3 font-semibold truncate">Price</th>
 								<th className="px-4 py-3 font-semibold truncate">Earnings</th>
 								<th className="px-4 py-3 font-semibold truncate">Students</th>
-								<th className="px-4 py-3 font-semibold truncate">
-									Course Status
-								</th>
+								<th className="px-4 py-3 font-semibold truncate">Status</th>
+								<th className="px-4 py-3 font-semibold truncate">Actions</th>
 							</tr>
 						</thead>
 
@@ -68,7 +104,7 @@ const MyCourses = () => {
 									<td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
 										<img
 											src={course.courseThumbnail}
-											alt="CoureImage"
+											alt="Course"
 											className="w-16"
 										/>
 										<span className="truncate hidden md:block">
@@ -85,8 +121,8 @@ const MyCourses = () => {
 											(course.discount * course.coursePrice) / 100 ===
 										0
 											? "Free"
-											: course.coursePrice -
-											  (course.discount * course.coursePrice) / 100}{" "}
+											: (course.coursePrice -
+											  (course.discount * course.coursePrice) / 100).toFixed(2)}{" "}
 									</td>
 									<td className="px-4 py-3">
 										{currency}{" "}
@@ -101,7 +137,31 @@ const MyCourses = () => {
 										{course.enrolledStudents.length}
 									</td>
 									<td className="px-4 py-3">
-										{new Date(course.createdAt).toLocaleDateString()}
+										<span className={`px-2 py-1 rounded-full text-xs font-medium ${course.isPublished ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+											{course.isPublished ? 'Published' : 'Draft'}
+										</span>
+									</td>
+									<td className="px-4 py-3">
+										<div className="flex items-center gap-2">
+											<button
+												onClick={() => navigate('/educator/edit-course/' + course._id)}
+												className="text-blue-500 hover:text-blue-700 text-sm font-medium"
+											>
+												Edit
+											</button>
+											<button
+												onClick={() => handleTogglePublish(course._id)}
+												className="text-yellow-500 hover:text-yellow-700 text-sm font-medium"
+											>
+												{course.isPublished ? 'Unpublish' : 'Publish'}
+											</button>
+											<button
+												onClick={() => handleDelete(course._id)}
+												className="text-red-500 hover:text-red-700 text-sm font-medium"
+											>
+												Delete
+											</button>
+										</div>
 									</td>
 								</tr>
 							))}

@@ -408,4 +408,123 @@ testRouter.post('/add-course', upload.single('image'), async (req, res) => {
     }
 })
 
+// Test update course
+testRouter.put('/update-course', upload.single('image'), async (req, res) => {
+    try {
+        const { courseData, userId, courseId } = req.body
+        const imageFile = req.file
+
+        if (!userId || !courseId) {
+            return res.json({ success: false, message: "userId and courseId required" })
+        }
+
+        const { data: existing } = await supabase
+            .from('courses')
+            .select('educator')
+            .eq('id', courseId)
+            .single()
+
+        if (!existing || existing.educator !== userId) {
+            return res.json({ success: false, message: "Not authorized to edit this course" })
+        }
+
+        const parsedCourseData = JSON.parse(courseData)
+
+        const updateData = {
+            course_title: parsedCourseData.courseTitle,
+            course_description: parsedCourseData.courseDescription || '',
+            course_price: Number(parsedCourseData.coursePrice),
+            discount: Number(parsedCourseData.discount),
+            course_content: parsedCourseData.courseContent || [],
+            updated_at: new Date().toISOString()
+        }
+
+        if (imageFile) {
+            const imageUpload = await cloudinary.uploader.upload(imageFile.path)
+            updateData.course_thumbnail = imageUpload.secure_url
+        }
+
+        const { error } = await supabase
+            .from('courses')
+            .update(updateData)
+            .eq('id', courseId)
+
+        if (error) {
+            return res.json({ success: false, message: error.message })
+        }
+
+        res.json({ success: true, message: "Course Updated" })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+})
+
+// Test delete course
+testRouter.delete('/delete-course', async (req, res) => {
+    try {
+        const { userId, courseId } = req.body
+
+        if (!userId || !courseId) {
+            return res.json({ success: false, message: "userId and courseId required" })
+        }
+
+        const { data: existing } = await supabase
+            .from('courses')
+            .select('educator')
+            .eq('id', courseId)
+            .single()
+
+        if (!existing || existing.educator !== userId) {
+            return res.json({ success: false, message: "Not authorized to delete this course" })
+        }
+
+        const { error } = await supabase
+            .from('courses')
+            .delete()
+            .eq('id', courseId)
+
+        if (error) {
+            return res.json({ success: false, message: error.message })
+        }
+
+        res.json({ success: true, message: "Course Deleted" })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+})
+
+// Test toggle publish
+testRouter.put('/toggle-publish', async (req, res) => {
+    try {
+        const { userId, courseId } = req.body
+
+        if (!userId || !courseId) {
+            return res.json({ success: false, message: "userId and courseId required" })
+        }
+
+        const { data: existing } = await supabase
+            .from('courses')
+            .select('educator, is_published')
+            .eq('id', courseId)
+            .single()
+
+        if (!existing || existing.educator !== userId) {
+            return res.json({ success: false, message: "Not authorized" })
+        }
+
+        const { error } = await supabase
+            .from('courses')
+            .update({ is_published: !existing.is_published, updated_at: new Date().toISOString() })
+            .eq('id', courseId)
+
+        if (error) {
+            return res.json({ success: false, message: error.message })
+        }
+
+        res.json({ success: true, message: existing.is_published ? 'Course Unpublished' : 'Course Published' })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+})
+
 export default testRouter
