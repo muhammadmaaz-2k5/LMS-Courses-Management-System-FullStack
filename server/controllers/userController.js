@@ -1,19 +1,39 @@
 import Stripe from "stripe"
+import { clerkClient } from "@clerk/express"
 import supabase from "../configs/supabase.js"
 import { mapUser, mapCourse, mapProgress } from "../configs/helpers.js"
 
-// Get users data
+// Get users data (auto-creates user in Supabase if missing)
 export const getUserData = async (req, res) => {
     try {
         const userId = req.auth.userId
-        const { data: user, error } = await supabase
+        let { data: user, error } = await supabase
             .from('users')
             .select('*')
             .eq('id', userId)
             .single()
 
+        // Auto-create user in Supabase if not found
         if (error || !user) {
-            return res.json({ success: false, message: "User not found!" })
+            const clerkUser = await clerkClient.users.getUser(userId)
+            const newUser = {
+                id: userId,
+                email: clerkUser.emailAddresses?.[0]?.emailAddress || "",
+                name: ((clerkUser.firstName || "") + " " + (clerkUser.lastName || "")).trim() || "User",
+                image_url: clerkUser.imageUrl || "",
+                enrolled_courses: []
+            }
+
+            const { data: created, error: createError } = await supabase
+                .from('users')
+                .upsert(newUser, { onConflict: 'id' })
+                .select()
+                .single()
+
+            if (createError) {
+                return res.json({ success: false, message: createError.message })
+            }
+            user = created
         }
 
         res.json({ success: true, user: mapUser(user) })
