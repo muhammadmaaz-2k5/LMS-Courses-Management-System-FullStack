@@ -15,7 +15,7 @@ const app = express();
 await connectCloudinay();
 
 // middleware
-app.use(cors());
+app.use(cors({ credentials: true, exposedHeaders: ['Authorization'] }));
 app.use(clerkMiddleware({
     secretKey: process.env.CLERK_SECRET_KEY,
     publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
@@ -24,6 +24,15 @@ app.use(clerkMiddleware({
 
 // Routes
 app.get('/', (req, res) => { res.send("Maaz API is working fine!") })
+app.get('/debug/auth', (req, res) => {
+    res.json({
+        hasAuth: !!req.auth,
+        userId: req.auth?.userId || null,
+        sessionId: req.auth?.sessionId || null,
+        secretKeyLength: process.env.CLERK_SECRET_KEY?.length || 0,
+        publishableKeyLength: process.env.CLERK_PUBLISHABLE_KEY?.length || 0,
+    })
+})
 app.post('/clerk', express.json(), clerkWebhooks)
 app.use('/api/educator', express.json(), educatorRouter);
 app.use('/api/course', express.json(), courseRouter);
