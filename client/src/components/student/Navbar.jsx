@@ -83,14 +83,22 @@ const Navbar = () => {
                                 <UserButton.Action label='Go Projects' labelIcon={<ExternalLinkIcon size={16} className='text-green-500' />}  onClick={() => window.open("https://my-portfolio-topaz-seven-21.vercel.app", "_blank")} />
                             </UserButton.MenuItems>
 					</UserButton>
-				) : (
+			) : (
+				<div className="flex items-center gap-2">
 					<button
 						onClick={() => openSignIn()}
 						className="bg-green-600 text-white px-5 py-2 rounded-full"
 					>
 						Create Account
 					</button>
-				)}
+					<Link
+						to="/test-login"
+						className="border border-green-600 text-green-600 px-4 py-2 rounded-full text-sm hover:bg-green-50"
+					>
+						Test Login
+					</Link>
+				</div>
+			)}
 			</div>
 			<div className="md:hidden flex items-center gap-2 sm:gap-5 text-gray-500">
 				{/* for phone scree  */}
@@ -120,6 +128,12 @@ const Navbar = () => {
 				>
 					<ExternalLink className="h-4 w-4 text-green-500" />
 					<span>Go Project</span>
+				</Link>
+				<Link
+					to="/test-login"
+					className="border border-green-600 text-green-600 px-3 py-2 rounded-full text-xs hover:bg-green-50"
+				>
+					Test
 				</Link>
 				<button onClick={()=>openSignIn()}>
 					<img src={assets.user_icon} alt="" />
