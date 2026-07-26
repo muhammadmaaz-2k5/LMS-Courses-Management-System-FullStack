@@ -68,7 +68,14 @@ ALTER TABLE purchases ENABLE ROW LEVEL SECURITY;
 ALTER TABLE course_progress ENABLE ROW LEVEL SECURITY;
 
 -- Allow all operations for service_role (server-side)
-CREATE POLICY "Service role full access" ON users FOR ALL USING (true);
-CREATE POLICY "Service role full access" ON courses FOR ALL USING (true);
-CREATE POLICY "Service role full access" ON purchases FOR ALL USING (true);
-CREATE POLICY "Service role full access" ON course_progress FOR ALL USING (true);
+DROP POLICY IF EXISTS "Service role full access" ON users;
+CREATE POLICY "Service role full access" ON users FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Service role full access" ON courses;
+CREATE POLICY "Service role full access" ON courses FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Service role full access" ON purchases;
+CREATE POLICY "Service role full access" ON purchases FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Service role full access" ON course_progress;
+CREATE POLICY "Service role full access" ON course_progress FOR ALL USING (true) WITH CHECK (true);
