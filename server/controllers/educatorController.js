@@ -1,179 +1,197 @@
-import {clerkClient} from '@clerk/express'
-import Course from '../models/Course.js'
-import {v2 as cloudinary} from 'cloudinary'
-import { Purchase } from '../models/Purchase.js'
-import User from '../models/User.js'
-
+import { clerkClient } from '@clerk/express'
+import { v2 as cloudinary } from 'cloudinary'
+import supabase from '../configs/supabase.js'
 
 // Update role to educator
-export const updateRoleToEducator = async (req,res)=>{
+export const updateRoleToEducator = async (req, res) => {
     try {
         const userId = req.auth.userId
 
         await clerkClient.users.updateUserMetadata(userId, {
-            publicMetadata:{
+            publicMetadata: {
                 role: 'educator',
             }
         })
 
-        res.json({success: true, message: 'You can publish a course now'})
-
-
+        res.json({ success: true, message: 'You can publish a course now' })
     } catch (error) {
-        res.json({success: false, message:error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
-//  Add new course 
-// export const addCourse = async(req,res) =>{
-//     try {
-//         const {courseData} = req.body;
-//         const imageFile = req.file;
-//         const educatorId = req.auth.userId
-//         console.log(educatoreId);
-//         if(!imageFile){
-//             return res.json({success: false, message:"Thumbnail Not Attached"})
-//         }
-
-//         const parsedCourseData = await JSON.parse(courseData)
-//         parsedCourseData.educator = educatorId
-//         const imageUpload = await cloudinary.uploader.upload(imageFile.path)
-//         newCourse.courseThumbnail = imageUpload.secure_url
-//         const newCourse = await Course.create(parsedCourseData)
-//         await newCourse.save()
-//         res.json({success: true, message: "Course Added"})
-
-
-
-//     } catch (error) {
-//         res.json({success: false, message:error.message})
-//     }
-// }
-
+// Add new course
 export const addCourse = async (req, res) => {
     try {
-        const { courseData } = req.body;
-        const imageFile = req.file;
-        const educatorId = req.auth.userId;
-
-        // console.log(educatorId);
+        const { courseData } = req.body
+        const imageFile = req.file
+        const educatorId = req.auth.userId
 
         if (!imageFile) {
-            return res.json({ success: false, message: "Thumbnail Not Attached" });
+            return res.json({ success: false, message: "Thumbnail Not Attached" })
         }
 
-        const parsedCourseData = JSON.parse(courseData);
-        parsedCourseData.educator = educatorId;
+        const parsedCourseData = JSON.parse(courseData)
 
-        // Ensure 'isPublished' defaults to true
-        // parsedCourseData.isPublished = parsedCourseData.isPublished ?? true;
+        // Upload image to Cloudinary
+        const imageUpload = await cloudinary.uploader.upload(imageFile.path)
 
-        // Ensure all lectures have required fields
-        // if (!parsedCourseData.courseContent?.every(chapter => 
-        //     chapter.chapterContent?.every(lecture => lecture.lectureId && lecture.lectureurl)
-        // )) {
-        //     return res.json({ success: false, message: "Lecture ID and URL are required in all chapters." });
-        // }
+        // Insert course into Supabase
+        const { data: newCourse, error } = await supabase
+            .from('courses')
+            .insert({
+                course_title: parsedCourseData.courseTitle,
+                course_description: parsedCourseData.courseDescription,
+                course_thumbnail: imageUpload.secure_url,
+                course_price: Number(parsedCourseData.coursePrice),
+                discount: Number(parsedCourseData.discount),
+                is_published: true,
+                course_content: parsedCourseData.courseContent || [],
+                educator: educatorId,
+                enrolled_students: [],
+                course_ratings: []
+            })
+            .select()
+            .single()
 
-        // Upload image first
-        const imageUpload = await cloudinary.uploader.upload(imageFile.path);
-        parsedCourseData.courseThumbnail = imageUpload.secure_url;
+        if (error) {
+            return res.json({ success: false, message: error.message })
+        }
 
-        // Create course after ensuring image is uploaded
-        const newCourse = await Course.create(parsedCourseData);
-        await newCourse.save()
-
-        res.json({ success: true, message: "Course Added", course: newCourse });
-
+        res.json({ success: true, message: "Course Added", course: newCourse })
     } catch (error) {
-        res.json({ success: false, message: error.message });
+        res.json({ success: false, message: error.message })
     }
-};
-
-
-
+}
 
 // Get educator courses
-
-export const getEducatorCourses = async(req,res) => {
-    try {
-        // const educator = req.auth
-        const educator = req.auth.userId
-        const courses = await Course.find({educator})
-        // console.log(req.auth);
-        res.json({success: true, courses})
-        
-    } catch (error) {
-        res.json({success: false, message:error.message})
-    }
-}
-
-// get educatore dashboard data (ttal earnings, enrolled students, No. of courses)
-
-export const educatorDashboardData = async(req,res) =>{
+export const getEducatorCourses = async (req, res) => {
     try {
         const educator = req.auth.userId
 
-        const courses = await Course.find({educator});
-        const totalCourses = courses.length;
+        const { data: courses, error } = await supabase
+            .from('courses')
+            .select('*')
+            .eq('educator', educator)
 
-        const courseIds = courses.map(course => course._id)
-        // calculate total earnings from purchases
-        const purchases = await Purchase.find({
-            courseId: {$in: courseIds},
-            status: 'completed'
-        });
-
-        const totalEarnings =Math.round( purchases.reduce((sum, purchase) => sum + purchase.amount, 0)).toFixed(2)
-        
-        // collect unique enrolled students ids with their course title
-
-        const enrolledStudentsData = [];
-        for(const course of courses){
-            const students = await User.find({
-                _id: {$in: course.enrolledStudents}
-            }, 'name imageUrl')
-
-            students.forEach(student => {
-                enrolledStudentsData.push({
-                    courseTitle: course.courseTitle,
-                    student
-                });
-            });
+        if (error) {
+            return res.json({ success: false, message: error.message })
         }
-        res.json({success: true, dashboardData: {
-            totalEarnings,enrolledStudentsData, totalCourses
-        }})
+
+        res.json({ success: true, courses })
     } catch (error) {
-        res.json({success: false, message:error.message})    
+        res.json({ success: false, message: error.message })
     }
 }
 
+// Get educator dashboard data (total earnings, enrolled students, No. of courses)
+export const educatorDashboardData = async (req, res) => {
+    try {
+        const educator = req.auth.userId
 
+        const { data: courses, error: coursesError } = await supabase
+            .from('courses')
+            .select('id, course_title, enrolled_students')
+            .eq('educator', educator)
 
+        if (coursesError) {
+            return res.json({ success: false, message: coursesError.message })
+        }
+
+        const totalCourses = courses.length
+        const courseIds = courses.map(course => course.id)
+
+        // Calculate total earnings from purchases
+        const { data: purchases, error: purchasesError } = await supabase
+            .from('purchases')
+            .select('amount')
+            .in('course_id', courseIds)
+            .eq('status', 'completed')
+
+        if (purchasesError) {
+            return res.json({ success: false, message: purchasesError.message })
+        }
+
+        const totalEarnings = Math.round(purchases.reduce((sum, p) => sum + p.amount, 0)).toFixed(2)
+
+        // Collect unique enrolled students with their course title
+        const enrolledStudentsData = []
+        for (const course of courses) {
+            const studentIds = course.enrolled_students || []
+            if (studentIds.length === 0) continue
+
+            const { data: students } = await supabase
+                .from('users')
+                .select('id, name, image_url')
+                .in('id', studentIds)
+
+            if (students) {
+                students.forEach(student => {
+                    enrolledStudentsData.push({
+                        courseTitle: course.course_title,
+                        student
+                    })
+                })
+            }
+        }
+
+        res.json({
+            success: true, dashboardData: {
+                totalEarnings, enrolledStudentsData, totalCourses
+            }
+        })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+}
 
 // Get Enrolled Students Data with purchase data
-
-export const getEnrolledStudentsData = async(req,res) =>{
+export const getEnrolledStudentsData = async (req, res) => {
     try {
-        const educator = req.auth.userId;
-        const courses = await Course.find({educator})
-        const courseIds = courses.map(course => course._id)
+        const educator = req.auth.userId
 
-        const purchases = await Purchase.find({
-            courseId: {$in: courseIds},
-            status: 'completed'
-        }).populate('userId', 'name imageUrl').populate('courseId', 'courseTitle')
+        const { data: courses, error: coursesError } = await supabase
+            .from('courses')
+            .select('id, course_title')
+            .eq('educator', educator)
+
+        if (coursesError) {
+            return res.json({ success: false, message: coursesError.message })
+        }
+
+        const courseIds = courses.map(course => course.id)
+        const courseIdMap = {}
+        courses.forEach(c => { courseIdMap[c.id] = c.course_title })
+
+        const { data: purchases, error: purchasesError } = await supabase
+            .from('purchases')
+            .select('*')
+            .in('course_id', courseIds)
+            .eq('status', 'completed')
+
+        if (purchasesError) {
+            return res.json({ success: false, message: purchasesError.message })
+        }
+
+        // Fetch student info for each purchase
+        const userIds = [...new Set(purchases.map(p => p.user_id))]
+        const { data: users } = await supabase
+            .from('users')
+            .select('id, name, image_url')
+            .in('id', userIds)
+
+        const userMap = {}
+        if (users) {
+            users.forEach(u => { userMap[u.id] = u })
+        }
 
         const enrolledStudents = purchases.map(purchase => ({
-            student: purchase.userId,
-            courseTitle: purchase.courseId.courseTitle,
-            purchaseDate: purchase.createdAt
-        }));
+            student: userMap[purchase.user_id] || { id: purchase.user_id, name: 'Unknown', image_url: '' },
+            courseTitle: courseIdMap[purchase.course_id] || 'Unknown Course',
+            purchaseDate: purchase.created_at
+        }))
 
-        res.json({success: true, enrolledStudents});
-
+        res.json({ success: true, enrolledStudents })
     } catch (error) {
-        res.json({success: false, message:error.message})
+        res.json({ success: false, message: error.message })
     }
 }

@@ -1,76 +1,111 @@
 import Stripe from "stripe"
-import Course from "../models/Course.js"
-import { Purchase } from "../models/Purchase.js"
-import User from "../models/User.js"
-import { CourseProgress } from "../models/CourseProgress.js"
+import supabase from "../configs/supabase.js"
 
 // Get users data
-export const getUserData = async(req,res)=>{
+export const getUserData = async (req, res) => {
     try {
         const userId = req.auth.userId
-        const user = await User.findById(userId)
-        if(!user){
-            res.json({success: false, message:"User not found!"})
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', userId)
+            .single()
+
+        if (error || !user) {
+            return res.json({ success: false, message: "User not found!" })
         }
 
-        res.json({success: true, user});
+        res.json({ success: true, user })
     } catch (error) {
-        res.json({success: false, message:error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
-// User enrolled course with lecture link
-
-export const userEnrolledCourses = async (req,res)=>{
+// User enrolled courses with lecture link
+export const userEnrolledCourses = async (req, res) => {
     try {
         const userId = req.auth.userId
-        const userData = await User.findById(userId).populate('enrolledCourses')
+        const { data: user, error: userError } = await supabase
+            .from('users')
+            .select('enrolled_courses')
+            .eq('id', userId)
+            .single()
 
-        res.json({success:true, enrolledCourses: userData.enrolledCourses})
+        if (userError || !user) {
+            return res.json({ success: false, message: "User not found!" })
+        }
 
+        const enrolledCourseIds = user.enrolled_courses || []
+        if (enrolledCourseIds.length === 0) {
+            return res.json({ success: true, enrolledCourses: [] })
+        }
 
+        const { data: enrolledCourses, error: courseError } = await supabase
+            .from('courses')
+            .select('*')
+            .in('id', enrolledCourseIds)
+
+        if (courseError) {
+            return res.json({ success: false, message: courseError.message })
+        }
+
+        res.json({ success: true, enrolledCourses })
     } catch (error) {
-        res.json({success: false, message:error.message})
+        res.json({ success: false, message: error.message })
     }
 }
-
 
 // Purchase course
-
-export const purchaseCourse = async (req,res) => {
+export const purchaseCourse = async (req, res) => {
     try {
-        const {courseId} = req.body
-        const {origin} = req.headers
-        const userId = req.auth.userId;
+        const { courseId } = req.body
+        const { origin } = req.headers
+        const userId = req.auth.userId
 
-        const userData = await User.findById(userId)
+        const { data: userData, error: userError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', userId)
+            .single()
 
-        const courseData = await Course.findById(courseId)
-        if(!userData || !courseData)
-        {
-            res.json({success: false, message: "Data Not Found"})
+        const { data: courseData, error: courseError } = await supabase
+            .from('courses')
+            .select('*')
+            .eq('id', courseId)
+            .single()
+
+        if (!userData || !courseData) {
+            return res.json({ success: false, message: "Data Not Found" })
         }
 
-        const purchaseData = {
-            courseId: courseData._id,
-            userId,
-            amount: (courseData.coursePrice - courseData.discount * courseData.coursePrice / 100).toFixed(2),
+        const amount = (courseData.course_price - courseData.discount * courseData.course_price / 100).toFixed(2)
+
+        const { data: newPurchase, error: purchaseError } = await supabase
+            .from('purchases')
+            .insert({
+                course_id: courseId,
+                user_id: userId,
+                amount: Number(amount),
+                status: 'pending'
+            })
+            .select()
+            .single()
+
+        if (purchaseError) {
+            return res.json({ success: false, message: purchaseError.message })
         }
 
-        const newPurchase = await Purchase.create(purchaseData);
-
-        // stripe gateway initialize
+        // Stripe gateway initialize
         const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
-        const currency = process.env.CURRENCY.toLowerCase();
-        
-        // creating line items to for stripe
+        const currency = process.env.CURRENCY.toLowerCase()
+
         const line_items = [{
-            price_data:{
+            price_data: {
                 currency,
-                product_data:{
-                    name: courseData.courseTitle
+                product_data: {
+                    name: courseData.course_title
                 },
-                unit_amount: Math.floor( newPurchase.amount ) * 100
+                unit_amount: Math.floor(amount) * 100
             },
             quantity: 1
         }]
@@ -78,106 +113,150 @@ export const purchaseCourse = async (req,res) => {
         const session = await stripeInstance.checkout.sessions.create({
             success_url: `${origin}/loading/my-enrollments`,
             cancel_url: `${origin}/`,
-            line_items: line_items,
+            line_items,
             mode: 'payment',
             metadata: {
-                purchaseId: newPurchase._id.toString()
+                purchaseId: newPurchase.id
             }
         })
 
-        res.json({success: true, session_url: session.url})
-
-
+        res.json({ success: true, session_url: session.url })
     } catch (error) {
-        res.json({success: false, message:error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
-// Update user Course progress
-
-export const updateUserCourseProgress = async(req,res)=>{
+// Update user course progress
+export const updateUserCourseProgress = async (req, res) => {
     try {
         const userId = req.auth.userId
-        const {courseId, lectureId} = req.body
-        const progressData = await CourseProgress.findOne({userId, courseId})
+        const { courseId, lectureId } = req.body
 
-        if(progressData){
-            if(progressData.lectureCompleted.includes(lectureId)){
-                return res.json({success: true, message: "Lecture Already Completed"})
+        const { data: progressData, error: findError } = await supabase
+            .from('course_progress')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('course_id', courseId)
+            .single()
+
+        if (progressData) {
+            const completed = progressData.lecture_completed || []
+            if (completed.includes(lectureId)) {
+                return res.json({ success: true, message: "Lecture Already Completed" })
             }
-            
-            progressData.lectureCompleted.push(lectureId)
-            progressData.completed = true
-            await progressData.save()
-        }
-        else{
-            await CourseProgress.create({
-                userId,
-                courseId,
-                lectureCompleted: [lectureId]
 
-            })
+            completed.push(lectureId)
+
+            const { error: updateError } = await supabase
+                .from('course_progress')
+                .update({
+                    lecture_completed: completed,
+                    completed: true
+                })
+                .eq('id', progressData.id)
+
+            if (updateError) {
+                return res.json({ success: false, message: updateError.message })
+            }
+        } else {
+            const { error: insertError } = await supabase
+                .from('course_progress')
+                .insert({
+                    user_id: userId,
+                    course_id: courseId,
+                    lecture_completed: [lectureId],
+                    completed: true
+                })
+
+            if (insertError) {
+                return res.json({ success: false, message: insertError.message })
+            }
         }
-        res.json({success:true, message: 'Progress Updated'})
+
+        res.json({ success: true, message: 'Progress Updated' })
     } catch (error) {
-        res.json({success: false, message:error.message})
+        res.json({ success: false, message: error.message })
     }
 }
 
-// get user course progress
-
-export const getUserCourseProgress = async(req,res)=>{
+// Get user course progress
+export const getUserCourseProgress = async (req, res) => {
     try {
         const userId = req.auth.userId
-        const {courseId} = req.body
-        const progressData = await CourseProgress.findOne({userId, courseId})
-        res.json({success: true, progressData})
+        const { courseId } = req.body
+
+        const { data: progressData, error } = await supabase
+            .from('course_progress')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('course_id', courseId)
+            .single()
+
+        // If no progress record found, return null (not an error)
+        if (error && error.code !== 'PGRST116') {
+            return res.json({ success: false, message: error.message })
+        }
+
+        res.json({ success: true, progressData: progressData || null })
     } catch (error) {
-        res.json({success: false, message:error.message})
+        res.json({ success: false, message: error.message })
     }
 }
-
 
 // Add user ratings to course
-
-export const addUserRating = async (req,res)=>{
+export const addUserRating = async (req, res) => {
     try {
         const userId = req.auth.userId
-        const {courseId, rating} = req.body
-        // console.log("UserId", courseId);
-        // console.log("courseId", courseId);
-        // console.log("rating", rating);
-        
+        const { courseId, rating } = req.body
 
-        if(!courseId || !userId || !rating || rating < 1 || rating > 5)
-        {
-            res.json({success: false, message:"Invalid details"})
+        if (!courseId || !userId || !rating || rating < 1 || rating > 5) {
+            return res.json({ success: false, message: "Invalid details" })
         }
 
-        const course = await Course.findById(courseId)
-        if(!course){
-            return res.json({success: false, message:"Course Not found!"})
+        const { data: course, error: courseError } = await supabase
+            .from('courses')
+            .select('*')
+            .eq('id', courseId)
+            .single()
+
+        if (courseError || !course) {
+            return res.json({ success: false, message: "Course Not found!" })
         }
 
-        const user = await User.findById(userId)
+        const { data: user, error: userError } = await supabase
+            .from('users')
+            .select('enrolled_courses')
+            .eq('id', userId)
+            .single()
 
-        if(!user || !user.enrolledCourses.includes(courseId)){
-            return res.json({success: false, message:"User has not purchased this course."})
+        if (userError || !user) {
+            return res.json({ success: false, message: "User not found!" })
         }
 
-        const existingRatingIndex = course.courseRatings.findIndex(r => r.userId === userId)
-        if(existingRatingIndex > -1){
-            course.courseRatings[existingRatingIndex].rating = rating;
-        }
-        else{
-            course.courseRatings.push({userId,rating});
+        if (!user.enrolled_courses || !user.enrolled_courses.includes(courseId)) {
+            return res.json({ success: false, message: "User has not purchased this course." })
         }
 
-        // await courseData.save()
-        await course.save()
-        res.json({success: true, message:"Rating Added"})
+        const ratings = course.course_ratings || []
+        const existingIndex = ratings.findIndex(r => r.userId === userId)
 
+        if (existingIndex > -1) {
+            ratings[existingIndex].rating = rating
+        } else {
+            ratings.push({ userId, rating })
+        }
+
+        const { error: updateError } = await supabase
+            .from('courses')
+            .update({ course_ratings: ratings })
+            .eq('id', courseId)
+
+        if (updateError) {
+            return res.json({ success: false, message: updateError.message })
+        }
+
+        res.json({ success: true, message: "Rating Added" })
     } catch (error) {
-        res.json({success: false, message: error.message});
+        res.json({ success: false, message: error.message })
     }
 }

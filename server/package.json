@@ -14,11 +14,11 @@
   "description": "Maaz LMS - A Modern Learning Management System",
   "dependencies": {
     "@clerk/express": "^2.1.46",
+    "@supabase/supabase-js": "^2.110.8",
     "cloudinary": "^2.10.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^4.21.2",
-    "mongoose": "^8.10.0",
     "multer": "^2.2.0",
     "nodemon": "^3.1.14",
     "stripe": "^22.3.2",
