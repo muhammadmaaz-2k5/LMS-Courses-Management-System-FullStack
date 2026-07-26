@@ -5,7 +5,12 @@ import { mapUser, mapCourse, mapProgress } from "../configs/helpers.js"
 // Get users data (auto-creates user in Supabase if missing)
 export const getUserData = async (req, res) => {
     try {
-        const userId = req.auth.userId
+        const userId = req.auth?.userId
+
+        if (!userId) {
+            return res.json({ success: false, message: "Unauthorized - please log in again" })
+        }
+
         let { data: user, error } = await supabase
             .from('users')
             .select('*')
@@ -44,7 +49,11 @@ export const getUserData = async (req, res) => {
 // User enrolled courses with lecture link
 export const userEnrolledCourses = async (req, res) => {
     try {
-        const userId = req.auth.userId
+        const userId = req.auth?.userId
+        if (!userId) {
+            return res.json({ success: false, message: "Unauthorized - please log in again" })
+        }
+
         const { data: user, error: userError } = await supabase
             .from('users')
             .select('enrolled_courses')
@@ -81,7 +90,11 @@ export const purchaseCourse = async (req, res) => {
     try {
         const { courseId } = req.body
         const { origin } = req.headers
-        const userId = req.auth.userId
+        const userId = req.auth?.userId
+
+        if (!userId) {
+            return res.json({ success: false, message: "Unauthorized - please log in again" })
+        }
 
         const { data: userData, error: userError } = await supabase
             .from('users')
@@ -164,8 +177,12 @@ export const purchaseCourse = async (req, res) => {
 // Update user course progress
 export const updateUserCourseProgress = async (req, res) => {
     try {
-        const userId = req.auth.userId
+        const userId = req.auth?.userId
         const { courseId, lectureId } = req.body
+
+        if (!userId) {
+            return res.json({ success: false, message: "Unauthorized - please log in again" })
+        }
 
         const { data: progressData, error: findError } = await supabase
             .from('course_progress')
@@ -217,8 +234,12 @@ export const updateUserCourseProgress = async (req, res) => {
 // Get user course progress
 export const getUserCourseProgress = async (req, res) => {
     try {
-        const userId = req.auth.userId
+        const userId = req.auth?.userId
         const { courseId } = req.body
+
+        if (!userId) {
+            return res.json({ success: false, message: "Unauthorized - please log in again" })
+        }
 
         const { data: progressData, error } = await supabase
             .from('course_progress')
@@ -240,10 +261,14 @@ export const getUserCourseProgress = async (req, res) => {
 // Add user ratings to course
 export const addUserRating = async (req, res) => {
     try {
-        const userId = req.auth.userId
+        const userId = req.auth?.userId
         const { courseId, rating } = req.body
 
-        if (!courseId || !userId || !rating || rating < 1 || rating > 5) {
+        if (!userId) {
+            return res.json({ success: false, message: "Unauthorized - please log in again" })
+        }
+
+        if (!courseId || !rating || rating < 1 || rating > 5) {
             return res.json({ success: false, message: "Invalid details" })
         }
 
