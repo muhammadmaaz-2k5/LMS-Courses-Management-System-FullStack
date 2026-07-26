@@ -1,4 +1,5 @@
 import Stripe from "stripe"
+import { clerkClient } from "@clerk/express"
 import supabase from "../configs/supabase.js"
 import { mapUser, mapCourse, mapProgress } from "../configs/helpers.js"
 
@@ -19,12 +20,25 @@ export const getUserData = async (req, res) => {
 
         // Auto-create user in Supabase if not found
         if (error || !user) {
+            let name = 'User'
+            let email = ''
+            let image_url = ''
+
+            try {
+                const clerkUser = await clerkClient.users.getUser(userId)
+                email = clerkUser.emailAddresses?.[0]?.emailAddress || ''
+                name = ((clerkUser.firstName || '') + ' ' + (clerkUser.lastName || '')).trim() || 'User'
+                image_url = clerkUser.imageUrl || ''
+            } catch (e) {
+                console.warn("Could not fetch Clerk user data:", e.message)
+            }
+
             const newUser = {
                 id: userId,
-                email: '',
-                name: 'User',
+                email,
+                name,
                 role: 'user',
-                image_url: '',
+                image_url,
                 enrolled_courses: []
             }
 

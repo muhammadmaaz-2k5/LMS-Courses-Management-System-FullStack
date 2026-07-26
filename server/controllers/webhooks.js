@@ -4,14 +4,20 @@ import supabase from "../configs/supabase.js";
 
 export const clerkWebhooks = async (req, res) => {
     try {
-        const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-        const payload = JSON.stringify(req.body);
+        const webhookSecret = process.env.CLERK_WEBHOOK_SECRET;
 
-        await whook.verify(payload, {
-            "svix-id": req.headers["svix-id"],
-            "svix-timestamp": req.headers["svix-timestamp"],
-            "svix-signature": req.headers["svix-signature"]
-        });
+        if (webhookSecret) {
+            const whook = new Webhook(webhookSecret);
+            const payload = JSON.stringify(req.body);
+
+            await whook.verify(payload, {
+                "svix-id": req.headers["svix-id"],
+                "svix-timestamp": req.headers["svix-timestamp"],
+                "svix-signature": req.headers["svix-signature"]
+            });
+        } else {
+            console.warn("CLERK_WEBHOOK_SECRET not set - skipping webhook verification")
+        }
 
         const { data, type } = req.body;
 
