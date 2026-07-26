@@ -6,7 +6,11 @@ import { mapCourse } from '../configs/helpers.js'
 // Update role to educator
 export const updateRoleToEducator = async (req, res) => {
     try {
-        const userId = req.auth.userId
+        const userId = req.auth?.userId
+
+        if (!userId) {
+            return res.json({ success: false, message: "Unauthorized - please log in again" })
+        }
 
         await clerkClient.users.updateUserMetadata(userId, {
             publicMetadata: {
@@ -16,6 +20,7 @@ export const updateRoleToEducator = async (req, res) => {
 
         res.json({ success: true, message: 'You can publish a course now' })
     } catch (error) {
+        console.error("updateRoleToEducator error:", error.message)
         res.json({ success: false, message: error.message })
     }
 }
