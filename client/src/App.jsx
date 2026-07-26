@@ -17,6 +17,7 @@ import { ToastContainer } from 'react-toastify';
 import About from './components/About'
 import ContactForm from './components/ContactForm'
 import PrivacyPolicy from './components/PrivacyPolicy'
+import TestLogin from './pages/TestLogin'
 
 
 const App = () => {
@@ -43,6 +44,7 @@ const App = () => {
         <Route path='/about' element={<About/>} />
         <Route path='/contact' element={<ContactForm/>} />
         <Route path='/privacy-policy' element={<PrivacyPolicy/>} />
+        <Route path='/test-login' element={<TestLogin/>} />
 
 
         <Route path='/educator' element={ <Educator />} >

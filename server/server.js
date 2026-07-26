@@ -7,6 +7,7 @@ import { clerkMiddleware } from '@clerk/express';
 import connectCloudinay from './configs/cloudinary.js';
 import courseRouter from './routes/courseRoute.js';
 import userRouter from './routes/userRoutes.js';
+import testRouter from './routes/testRoutes.js';
 
 // initialize express 
 const app = express();
@@ -16,10 +17,7 @@ await connectCloudinay();
 
 // middleware
 app.use(cors({ credentials: true, exposedHeaders: ['Authorization'] }));
-app.use(clerkMiddleware({
-    secretKey: process.env.CLERK_SECRET_KEY,
-    publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
-}))
+app.use(clerkMiddleware())
 
 
 // Routes
@@ -37,6 +35,7 @@ app.post('/clerk', express.json(), clerkWebhooks)
 app.use('/api/educator', express.json(), educatorRouter);
 app.use('/api/course', express.json(), courseRouter);
 app.use('/api/user', express.json(), userRouter);
+app.use('/api/test', express.json(), testRouter);
 
 // Stripe webhook (only if Stripe is configured)
 if (process.env.STRIPE_SECRET_KEY) {
