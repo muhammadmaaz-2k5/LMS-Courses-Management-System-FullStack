@@ -11,9 +11,9 @@ const supabase = createClient(
 const users = [
   {
     id: 'user_educator1',
-    name: 'Gyan Pratap Singh',
-    email: 'gyan@maazlms.com',
-    image_url: 'https://ui-avatars.com/api/?name=GPS&background=16a34a&color=fff&size=200',
+    name: 'Muhammad Maaz',
+    email: 'maaz@maazlms.com',
+    image_url: 'https://ui-avatars.com/api/?name=MM&background=16a34a&color=fff&size=200',
     enrolled_courses: []
   },
   {
