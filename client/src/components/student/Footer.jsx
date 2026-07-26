@@ -92,7 +92,7 @@ const Footer = () => {
 				</div>
 			</div>
 			<p className="py-4 text-center text-xs md:text-sm text-white/60">
-				Copyright 2025 © Maaz by GPS. All Right Reserved.
+				Copyright 2025 © Maaz by Muhammad Maaz. All Right Reserved.
 			</p>
 		</footer>
 	);
