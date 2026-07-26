@@ -16,7 +16,10 @@ await connectCloudinay();
 
 // middleware
 app.use(cors());
-app.use(clerkMiddleware())
+app.use(clerkMiddleware({
+    secretKey: process.env.CLERK_SECRET_KEY,
+    publishableKey: process.env.CLERK_PUBLISHABLE_KEY,
+}))
 
 
 // Routes
