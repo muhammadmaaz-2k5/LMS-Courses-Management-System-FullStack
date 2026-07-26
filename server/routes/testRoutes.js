@@ -1,5 +1,7 @@
 import express from 'express'
 import supabase from '../configs/supabase.js'
+import { v2 as cloudinary } from 'cloudinary'
+import upload from '../configs/multer.js'
 
 const testRouter = express.Router()
 
@@ -356,6 +358,51 @@ testRouter.get('/educator/enrolled-students/:userId', async (req, res) => {
         }))
 
         res.json({ success: true, enrolledStudents })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+})
+
+// Test add course
+testRouter.post('/add-course', upload.single('image'), async (req, res) => {
+    try {
+        const { courseData, userId } = req.body
+        const imageFile = req.file
+
+        if (!userId) {
+            return res.json({ success: false, message: "userId required" })
+        }
+
+        const parsedCourseData = JSON.parse(courseData)
+
+        let thumbnailUrl = ''
+        if (imageFile) {
+            const imageUpload = await cloudinary.uploader.upload(imageFile.path)
+            thumbnailUrl = imageUpload.secure_url
+        }
+
+        const { data: newCourse, error } = await supabase
+            .from('courses')
+            .insert({
+                course_title: parsedCourseData.courseTitle,
+                course_description: parsedCourseData.courseDescription || '',
+                course_thumbnail: thumbnailUrl,
+                course_price: Number(parsedCourseData.coursePrice),
+                discount: Number(parsedCourseData.discount),
+                is_published: true,
+                course_content: parsedCourseData.courseContent || [],
+                educator: userId,
+                enrolled_students: [],
+                course_ratings: []
+            })
+            .select()
+            .single()
+
+        if (error) {
+            return res.json({ success: false, message: error.message })
+        }
+
+        res.json({ success: true, message: "Course Added" })
     } catch (error) {
         res.json({ success: false, message: error.message })
     }

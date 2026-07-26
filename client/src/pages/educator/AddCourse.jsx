@@ -135,13 +135,27 @@ const AddCourse = () => {
       const formData = new FormData();
       formData.append("courseData", JSON.stringify(courseData)); // ✅ Ensure courseData is sent as JSON
       formData.append("image", image); // ✅ Ensure image is sent correctly
-  
-      const token = await getToken();
-      const { data } = await axios.post(
-        backendUrl + "/api/educator/add-course",
-        formData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+
+      const testUser = (() => { try { return JSON.parse(localStorage.getItem('testUser')) } catch { return null } })();
+
+      let data;
+      if (testUser) {
+        formData.append("userId", testUser.id);
+        const res = await axios.post(
+          backendUrl + "/api/test/add-course",
+          formData,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+        data = res.data;
+      } else {
+        const token = await getToken();
+        const res = await axios.post(
+          backendUrl + "/api/educator/add-course",
+          formData,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        data = res.data;
+      }
   
       console.log("data", data);
   
