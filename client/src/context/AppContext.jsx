@@ -22,9 +22,23 @@ export const AppContextProvider = (props)=>{
     const [enrolledCourses, setEnrolledCourses] = useState([])
     const [userData, setUserData] = useState(null)
 
-    // fetch all courses 
+    const getTestUser = () => {
+        try {
+            const saved = localStorage.getItem('testUser')
+            return saved ? JSON.parse(saved) : null
+        } catch { return null }
+    }
+
+    const isTestMode = !!getTestUser()
+
+    const getAuthHeaders = async () => {
+        if (isTestMode) return {}
+        const token = await getToken()
+        return { Authorization: `Bearer ${token}` }
+    }
+
+    // fetch all courses
     const fetchAllCourses = async ()=>{
-        // setAllCourses(dummyCourses)
         try {
             const {data} = await axios.get(backendUrl + '/api/course/all');
             if(data.success)
@@ -33,7 +47,6 @@ export const AppContextProvider = (props)=>{
             }else{
                 toast.error(data.message);
             }
-            
         } catch (error) {
             toast.error(error.message)
         }
@@ -41,12 +54,28 @@ export const AppContextProvider = (props)=>{
 
     // fetch user data
     const fetchUserData = async ()=>{
+        const testUser = getTestUser()
+
+        if (testUser) {
+            try {
+                const {data} = await axios.get(backendUrl + '/api/test/user-data/' + testUser.id)
+                if(data.success){
+                    setUserData(data.user)
+                    if(data.user.role === 'educator'){
+                        setIsEducator(true);
+                    }
+                }
+            } catch (error) {
+                console.error(error)
+            }
+            return
+        }
 
         try {
             const token = await getToken();
 
             const {data} = await axios.get(backendUrl + '/api/user/data' , {headers: {Authorization: `Bearer ${token}`}})
-        
+
             if(data.success){
                 setUserData(data.user)
                 if(data.user.role === 'educator'){
@@ -84,10 +113,10 @@ export const AppContextProvider = (props)=>{
     const calculateCourseDuration = (course)=>{
         let time = 0 ;
         course.courseContent.map((chapter)=> chapter.chapterContent.map(
-            (lecture)=> time += lecture.lectureDuration 
+            (lecture)=> time += lecture.lectureDuration
         ))
 
-        return humanizeDuration(time * 60 * 1000, {units: ["h", "m"]}) 
+        return humanizeDuration(time * 60 * 1000, {units: ["h", "m"]})
     }
 
     // Function to calculate to no. of lectures in the course
@@ -101,39 +130,27 @@ export const AppContextProvider = (props)=>{
         return totalLectures;
     }
 
-    // Fetch user enrolled courses
-
-    // const fetchUserEnrolledCourses = async()=>{
-    //     // setEnrolledCourses(dummyCourses)
-    //    try {
-    //     const token = await getToken();
-
-    //     const data = await axios.get(backendUrl + '/api/user/enrolled-courses', {headers: {Authorization: `Bearer ${token}`}})
-        
-    //     console.log("Data",data);
-    //     if(data){
-    //         setEnrolledCourses(data.enrolledCourses.reverse());
-    //         // console.log("enroll", enrolledCourses);
-    //         // console.log("setenroll", enrolledCourses);
-            
-    //     }else{
-    //         toast.error(data.message)
-    //     }
-    //    } catch (error) {
-    //     toast.error(error.message)
-    //    }
-    // }
-
-
     const fetchUserEnrolledCourses = async () => {
+        const testUser = getTestUser()
+
+        if (testUser) {
+            try {
+                const { data } = await axios.get(backendUrl + "/api/test/enrolled-courses/" + testUser.id);
+                if (data.success && data.enrolledCourses) {
+                    setEnrolledCourses(data.enrolledCourses.reverse());
+                }
+            } catch (error) {
+                console.error("Error fetching test user courses:", error);
+            }
+            return
+        }
+
         try {
             const token = await getToken();
             const response = await axios.get(backendUrl + "/api/user/enrolled-courses", {
                 headers: { Authorization: `Bearer ${token}` }
             });
-    
-            // console.log("Response:", response); // Debugging: Log full response
-    
+
             if (response.data && response.data.enrolledCourses) {
                 setEnrolledCourses(response.data.enrolledCourses.reverse());
             } else {
@@ -144,7 +161,7 @@ export const AppContextProvider = (props)=>{
             toast.error(error.response?.data?.message || error.message);
         }
     };
-    
+
     useEffect(()=>{
         fetchAllCourses()
     },[])
@@ -153,19 +170,19 @@ export const AppContextProvider = (props)=>{
 
     },[])
 
-
-    // const logToken = async ()=>{
-    //     console.log(await getToken());
-        
-    // }
-
     useEffect(()=>{
         if(user){
             fetchUserData()
-            // logToken()
             fetchUserEnrolledCourses()
         }
     },[user])
+
+    useEffect(()=>{
+        if(isTestMode && !user){
+            fetchUserData()
+            fetchUserEnrolledCourses()
+        }
+    },[])
 
     const value = {
         currency,allCourses, navigate, isEducator, setIsEducator,
@@ -181,6 +198,6 @@ export const AppContextProvider = (props)=>{
         </AppContext.Provider>
     )
 
-    
+
 
 }

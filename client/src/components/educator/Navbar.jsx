@@ -6,6 +6,7 @@ import Logger from "../Logger";
 const Navbar = () => {
 	const educatorData = dummyEducatorData;
 	const { user } = useUser();
+	const testUser = (() => { try { return JSON.parse(localStorage.getItem('testUser')) } catch { return null } })();
 	return (
 		<div className="flex items-center justify-between px-4 md:px-8 border-b border-gray-500 py-3">
 			<Link to="/">
@@ -16,9 +17,13 @@ const Navbar = () => {
 				<div className="hidden md:block">
 					<Logger />
 				</div>
-				<p>Hi! {user ? user.fullName : "Developers"} </p>
+				<p>Hi! {user ? user.fullName : testUser ? testUser.name : "Developers"} </p>
 				{user ? (
 					<UserButton />
+				) : testUser ? (
+					<div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white font-bold text-sm">
+						{testUser.name?.charAt(0)?.toUpperCase() || 'T'}
+					</div>
 				) : (
 					<img className="max-w-8" src={assets.profile_img} alt="profile_img" />
 				)}

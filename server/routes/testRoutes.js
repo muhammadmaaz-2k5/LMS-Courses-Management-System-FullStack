@@ -199,4 +199,166 @@ testRouter.post('/purchase', async (req, res) => {
     }
 })
 
+// Test educator dashboard
+testRouter.get('/educator/dashboard/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params
+
+        const { data: user } = await supabase
+            .from('users')
+            .select('role')
+            .eq('id', userId)
+            .single()
+
+        if (!user || user.role !== 'educator') {
+            return res.json({ success: false, message: "Not an educator" })
+        }
+
+        const { data: courses, error: coursesError } = await supabase
+            .from('courses')
+            .select('id, course_title, enrolled_students')
+            .eq('educator', userId)
+
+        if (coursesError) {
+            return res.json({ success: false, message: coursesError.message })
+        }
+
+        const totalCourses = courses.length
+        const courseIds = courses.map(course => course.id)
+
+        const { data: purchases } = await supabase
+            .from('purchases')
+            .select('amount')
+            .in('course_id', courseIds)
+            .eq('status', 'completed')
+
+        const totalEarnings = Math.round((purchases || []).reduce((sum, p) => sum + p.amount, 0)).toFixed(2)
+
+        const enrolledStudentsData = []
+        for (const course of courses) {
+            const studentIds = course.enrolled_students || []
+            if (studentIds.length === 0) continue
+
+            const { data: students } = await supabase
+                .from('users')
+                .select('id, name, image_url')
+                .in('id', studentIds)
+
+            if (students) {
+                students.forEach(student => {
+                    enrolledStudentsData.push({
+                        courseTitle: course.course_title,
+                        student: {
+                            _id: student.id,
+                            name: student.name,
+                            imageUrl: student.image_url
+                        }
+                    })
+                })
+            }
+        }
+
+        res.json({
+            success: true, dashboardData: {
+                totalEarnings, enrolledStudentsData, totalCourses
+            }
+        })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+})
+
+// Test educator courses
+testRouter.get('/educator/courses/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params
+
+        const { data: courses, error } = await supabase
+            .from('courses')
+            .select('*')
+            .eq('educator', userId)
+
+        if (error) {
+            return res.json({ success: false, message: error.message })
+        }
+
+        const mapped = (courses || []).map(c => ({
+            _id: c.id,
+            courseTitle: c.course_title,
+            courseDescription: c.course_description,
+            courseThumbnail: c.course_thumbnail,
+            coursePrice: c.course_price,
+            isPublished: c.is_published,
+            discount: c.discount,
+            courseContent: c.course_content || [],
+            courseRatings: c.course_ratings || [],
+            educator: c.educator,
+            enrolledStudents: c.enrolled_students || [],
+            createdAt: c.created_at,
+            updatedAt: c.updated_at,
+        }))
+
+        res.json({ success: true, courses: mapped })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+})
+
+// Test educator enrolled students
+testRouter.get('/educator/enrolled-students/:userId', async (req, res) => {
+    try {
+        const { userId } = req.params
+
+        const { data: courses } = await supabase
+            .from('courses')
+            .select('id, course_title')
+            .eq('educator', userId)
+
+        if (!courses || courses.length === 0) {
+            return res.json({ success: true, enrolledStudents: [] })
+        }
+
+        const courseIds = courses.map(c => c.id)
+        const courseIdMap = {}
+        courses.forEach(c => { courseIdMap[c.id] = c.course_title })
+
+        const { data: purchases } = await supabase
+            .from('purchases')
+            .select('*')
+            .in('course_id', courseIds)
+            .eq('status', 'completed')
+
+        if (!purchases || purchases.length === 0) {
+            return res.json({ success: true, enrolledStudents: [] })
+        }
+
+        const userIds = [...new Set(purchases.map(p => p.user_id))]
+        const { data: users } = await supabase
+            .from('users')
+            .select('id, name, image_url')
+            .in('id', userIds)
+
+        const userMap = {}
+        if (users) {
+            users.forEach(u => {
+                userMap[u.id] = {
+                    _id: u.id,
+                    name: u.name,
+                    imageUrl: u.image_url
+                }
+            })
+        }
+
+        const enrolledStudents = purchases.map(purchase => ({
+            student: userMap[purchase.user_id] || { _id: purchase.user_id, name: 'Unknown', imageUrl: '' },
+            courseTitle: courseIdMap[purchase.course_id] || 'Unknown Course',
+            purchaseDate: purchase.created_at
+        }))
+
+        res.json({ success: true, enrolledStudents })
+    } catch (error) {
+        res.json({ success: false, message: error.message })
+    }
+})
+
 export default testRouter

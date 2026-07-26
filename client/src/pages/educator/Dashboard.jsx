@@ -12,15 +12,24 @@ const Dashboard = () => {
 	const [dashboardData, setDashboardData] = useState(null);
 
 	const fetchDashboardData = async () => {
-		// setDashboardData(dummyDashboardData);
+		const testUser = (() => { try { return JSON.parse(localStorage.getItem('testUser')) } catch { return null } })();
+
 		try {
+			if (testUser) {
+				const { data } = await axios.get(backendUrl + "/api/test/educator/dashboard/" + testUser.id);
+				if (data.success) {
+					setDashboardData(data.dashboardData);
+				} else {
+					toast.error(data.message);
+				}
+				return
+			}
+
 			const token = await getToken();
 
 			const { data } = await axios.get(backendUrl + "/api/educator/dashboard", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-
-			// console.log("dashboard data", data.dashboardData);
 
 			if (data.success) {
 				setDashboardData(data.dashboardData);

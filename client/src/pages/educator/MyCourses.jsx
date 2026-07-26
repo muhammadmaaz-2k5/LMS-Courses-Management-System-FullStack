@@ -11,18 +11,23 @@ const MyCourses = () => {
 	const [courses, setCourses] = useState(null);
 
 	const fetchEducatorCourses = async () => {
-		// setCourses(allCourses)
+		const testUser = (() => { try { return JSON.parse(localStorage.getItem('testUser')) } catch { return null } })();
+
 		try {
+			if (testUser) {
+				const { data } = await axios.get(backendUrl + "/api/test/educator/courses/" + testUser.id);
+				data.success && setCourses(data.courses);
+				return
+			}
+
 			const token = await getToken();
 			const { data } = await axios.get(backendUrl + "/api/educator/courses", {
 				headers: { Authorization: `Bearer ${token}` },
 			});
-			// console.log("data", data.courses);
 
 			data.success && setCourses(data.courses);
 		} catch (error) {
 			toast.error(error.message);
-			console.log(error.message);
 		}
 	};
 
