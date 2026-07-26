@@ -1,5 +1,6 @@
 import Stripe from "stripe"
 import supabase from "../configs/supabase.js"
+import { mapUser, mapCourse, mapProgress } from "../configs/helpers.js"
 
 // Get users data
 export const getUserData = async (req, res) => {
@@ -15,7 +16,7 @@ export const getUserData = async (req, res) => {
             return res.json({ success: false, message: "User not found!" })
         }
 
-        res.json({ success: true, user })
+        res.json({ success: true, user: mapUser(user) })
     } catch (error) {
         res.json({ success: false, message: error.message })
     }
@@ -40,7 +41,7 @@ export const userEnrolledCourses = async (req, res) => {
             return res.json({ success: true, enrolledCourses: [] })
         }
 
-        const { data: enrolledCourses, error: courseError } = await supabase
+        const { data: courses, error: courseError } = await supabase
             .from('courses')
             .select('*')
             .in('id', enrolledCourseIds)
@@ -49,7 +50,8 @@ export const userEnrolledCourses = async (req, res) => {
             return res.json({ success: false, message: courseError.message })
         }
 
-        res.json({ success: true, enrolledCourses })
+        const mappedCourses = (courses || []).map(mapCourse)
+        res.json({ success: true, enrolledCourses: mappedCourses })
     } catch (error) {
         res.json({ success: false, message: error.message })
     }
@@ -99,11 +101,9 @@ export const purchaseCourse = async (req, res) => {
         if (!process.env.STRIPE_SECRET_KEY) {
             await supabase.from('purchases').update({ status: 'completed' }).eq('id', newPurchase.id)
 
-            // Add course to user's enrolled courses
             const updatedCourses = [...(userData.enrolled_courses || []), courseId]
             await supabase.from('users').update({ enrolled_courses: updatedCourses }).eq('id', userId)
 
-            // Add user to course's enrolled students
             const { data: course } = await supabase.from('courses').select('enrolled_students').eq('id', courseId).single()
             const updatedStudents = [...(course.enrolled_students || []), userId]
             await supabase.from('courses').update({ enrolled_students: updatedStudents }).eq('id', courseId)
@@ -208,12 +208,11 @@ export const getUserCourseProgress = async (req, res) => {
             .eq('course_id', courseId)
             .single()
 
-        // If no progress record found, return null (not an error)
         if (error && error.code !== 'PGRST116') {
             return res.json({ success: false, message: error.message })
         }
 
-        res.json({ success: true, progressData: progressData || null })
+        res.json({ success: true, progressData: mapProgress(progressData) })
     } catch (error) {
         res.json({ success: false, message: error.message })
     }

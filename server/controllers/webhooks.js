@@ -20,14 +20,14 @@ export const clerkWebhooks = async (req, res) => {
                 const userData = {
                     id: data.id,
                     email: data.email_addresses?.[0]?.email_address || "",
-                    name: (data.first_name || "") + " " + (data.last_name || ""),
+                    name: ((data.first_name || "") + " " + (data.last_name || "")).trim(),
                     image_url: data.image_url || "",
                     enrolled_courses: []
                 };
 
                 const { error } = await supabase
                     .from('users')
-                    .insert(userData)
+                    .upsert(userData, { onConflict: 'id' })
 
                 if (error) {
                     console.error("Error creating user:", error.message)

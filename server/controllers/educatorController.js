@@ -1,6 +1,7 @@
 import { clerkClient } from '@clerk/express'
 import { v2 as cloudinary } from 'cloudinary'
 import supabase from '../configs/supabase.js'
+import { mapCourse } from '../configs/helpers.js'
 
 // Update role to educator
 export const updateRoleToEducator = async (req, res) => {
@@ -57,7 +58,7 @@ export const addCourse = async (req, res) => {
             return res.json({ success: false, message: error.message })
         }
 
-        res.json({ success: true, message: "Course Added", course: newCourse })
+        res.json({ success: true, message: "Course Added", course: mapCourse(newCourse) })
     } catch (error) {
         res.json({ success: false, message: error.message })
     }
@@ -77,13 +78,14 @@ export const getEducatorCourses = async (req, res) => {
             return res.json({ success: false, message: error.message })
         }
 
-        res.json({ success: true, courses })
+        const mapped = (courses || []).map(mapCourse)
+        res.json({ success: true, courses: mapped })
     } catch (error) {
         res.json({ success: false, message: error.message })
     }
 }
 
-// Get educator dashboard data (total earnings, enrolled students, No. of courses)
+// Get educator dashboard data
 export const educatorDashboardData = async (req, res) => {
     try {
         const educator = req.auth.userId
@@ -100,7 +102,6 @@ export const educatorDashboardData = async (req, res) => {
         const totalCourses = courses.length
         const courseIds = courses.map(course => course.id)
 
-        // Calculate total earnings from purchases
         const { data: purchases, error: purchasesError } = await supabase
             .from('purchases')
             .select('amount')
@@ -113,7 +114,6 @@ export const educatorDashboardData = async (req, res) => {
 
         const totalEarnings = Math.round(purchases.reduce((sum, p) => sum + p.amount, 0)).toFixed(2)
 
-        // Collect unique enrolled students with their course title
         const enrolledStudentsData = []
         for (const course of courses) {
             const studentIds = course.enrolled_students || []
@@ -128,7 +128,11 @@ export const educatorDashboardData = async (req, res) => {
                 students.forEach(student => {
                     enrolledStudentsData.push({
                         courseTitle: course.course_title,
-                        student
+                        student: {
+                            _id: student.id,
+                            name: student.name,
+                            imageUrl: student.image_url
+                        }
                     })
                 })
             }
@@ -172,7 +176,6 @@ export const getEnrolledStudentsData = async (req, res) => {
             return res.json({ success: false, message: purchasesError.message })
         }
 
-        // Fetch student info for each purchase
         const userIds = [...new Set(purchases.map(p => p.user_id))]
         const { data: users } = await supabase
             .from('users')
@@ -181,11 +184,17 @@ export const getEnrolledStudentsData = async (req, res) => {
 
         const userMap = {}
         if (users) {
-            users.forEach(u => { userMap[u.id] = u })
+            users.forEach(u => {
+                userMap[u.id] = {
+                    _id: u.id,
+                    name: u.name,
+                    imageUrl: u.image_url
+                }
+            })
         }
 
         const enrolledStudents = purchases.map(purchase => ({
-            student: userMap[purchase.user_id] || { id: purchase.user_id, name: 'Unknown', image_url: '' },
+            student: userMap[purchase.user_id] || { _id: purchase.user_id, name: 'Unknown', imageUrl: '' },
             courseTitle: courseIdMap[purchase.course_id] || 'Unknown Course',
             purchaseDate: purchase.created_at
         }))

@@ -1,11 +1,12 @@
 import supabase from "../configs/supabase.js"
+import { mapCourse } from "../configs/helpers.js"
 
 // Get all courses
 export const getAllCourse = async (req, res) => {
     try {
         const { data: courses, error } = await supabase
             .from('courses')
-            .select('id, course_title, course_description, course_thumbnail, course_price, discount, is_published, course_ratings, educator, enrolled_students, created_at, updated_at')
+            .select('*')
             .eq('is_published', true)
 
         if (error) {
@@ -24,10 +25,11 @@ export const getAllCourse = async (req, res) => {
             educators.forEach(e => { educatorMap[e.id] = e })
         }
 
-        const enrichedCourses = courses.map(course => ({
-            ...course,
-            educator: educatorMap[course.educator] || course.educator
-        }))
+        const enrichedCourses = courses.map(course => {
+            const mapped = mapCourse(course)
+            mapped.educator = educatorMap[course.educator] || course.educator
+            return mapped
+        })
 
         res.json({ success: true, courses: enrichedCourses })
     } catch (error) {
@@ -56,11 +58,12 @@ export const getCourseId = async (req, res) => {
             .eq('id', courseData.educator)
             .single()
 
-        courseData.educator = educator || courseData.educator
+        const mapped = mapCourse(courseData)
+        mapped.educator = educator || mapped.educator
 
         // Remove lecture URL if previewFree is false
-        if (courseData.course_content) {
-            courseData.course_content.forEach(chapter => {
+        if (mapped.courseContent) {
+            mapped.courseContent.forEach(chapter => {
                 if (chapter.chapterContent) {
                     chapter.chapterContent.forEach(lecture => {
                         if (!lecture.isPreviewFree) {
@@ -71,7 +74,7 @@ export const getCourseId = async (req, res) => {
             })
         }
 
-        res.json({ success: true, courseData })
+        res.json({ success: true, courseData: mapped })
     } catch (error) {
         res.json({ success: false, message: error.message })
     }
