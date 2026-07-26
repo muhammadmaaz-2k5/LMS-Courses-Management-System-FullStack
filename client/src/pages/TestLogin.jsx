@@ -7,8 +7,8 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL
 
 const TestLogin = () => {
     const navigate = useNavigate()
-    const [email, setEmail] = useState('')
-    const [name, setName] = useState('')
+    const [email, setEmail] = useState('test@example.com')
+    const [name, setName] = useState('Test User')
     const [loading, setLoading] = useState(false)
     const [testUser, setTestUser] = useState(null)
 
