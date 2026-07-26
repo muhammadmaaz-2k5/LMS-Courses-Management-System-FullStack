@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL,
+  role TEXT NOT NULL DEFAULT 'user',
   image_url TEXT NOT NULL DEFAULT '',
   enrolled_courses TEXT[] DEFAULT '{}',
   created_at TIMESTAMPTZ DEFAULT now(),
@@ -79,3 +80,10 @@ CREATE POLICY "Service role full access" ON purchases FOR ALL USING (true) WITH 
 
 DROP POLICY IF EXISTS "Service role full access" ON course_progress;
 CREATE POLICY "Service role full access" ON course_progress FOR ALL USING (true) WITH CHECK (true);
+
+-- Add role column if it doesn't exist (for existing databases)
+DO $$ BEGIN
+  ALTER TABLE users ADD COLUMN IF NOT EXISTS role TEXT NOT NULL DEFAULT 'user';
+EXCEPTION
+  WHEN duplicate_column THEN null;
+END $$;

@@ -25,6 +25,7 @@ export function mapUser(user) {
         _id: user.id,
         name: user.name,
         email: user.email,
+        role: user.role || 'user',
         imageUrl: user.image_url,
         enrolledCourses: user.enrolled_courses || [],
         createdAt: user.created_at,

@@ -1,4 +1,3 @@
-import { clerkClient } from '@clerk/express'
 import { v2 as cloudinary } from 'cloudinary'
 import supabase from '../configs/supabase.js'
 import { mapCourse } from '../configs/helpers.js'
@@ -12,15 +11,18 @@ export const updateRoleToEducator = async (req, res) => {
             return res.json({ success: false, message: "Unauthorized - please log in again" })
         }
 
-        const updated = await clerkClient.users.updateUserMetadata(userId, {
-            publicMetadata: {
-                role: 'educator',
-            }
-        })
+        const { error } = await supabase
+            .from('users')
+            .update({ role: 'educator', updated_at: new Date().toISOString() })
+            .eq('id', userId)
 
-        res.json({ success: true, message: 'You can publish a course now', role: updated.publicMetadata?.role })
+        if (error) {
+            return res.json({ success: false, message: error.message })
+        }
+
+        res.json({ success: true, message: 'You can publish a course now' })
     } catch (error) {
-        console.error("updateRoleToEducator error:", error.status, error.message, error.errors)
+        console.error("updateRoleToEducator error:", error.message)
         res.json({ success: false, message: error.message })
     }
 }

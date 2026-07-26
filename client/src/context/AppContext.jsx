@@ -42,10 +42,6 @@ export const AppContextProvider = (props)=>{
     // fetch user data
     const fetchUserData = async ()=>{
 
-        if(user.publicMetadata.role === 'educator'){
-            setIsEducator(true);
-        }
-
         try {
             const token = await getToken();
 
@@ -53,6 +49,9 @@ export const AppContextProvider = (props)=>{
         
             if(data.success){
                 setUserData(data.user)
+                if(data.user.role === 'educator'){
+                    setIsEducator(true);
+                }
             }else{
                 toast.error(data.message)
             }
