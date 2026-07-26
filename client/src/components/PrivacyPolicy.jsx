@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
       <main className="min-h-screen bg-gradient-to-b from-green-100/70 to-white flex items-start py-16 px-6 md:px-12">
         <section className="w-full max-w-4xl mx-auto bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-6 md:p-12 border border-gray-100">
           <header className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-6">
-            <img src={assets.logo || assets.sketch} alt="Maaz logo" className="w-12 h-12 md:w-20 md:h-20 rounded-md" />
+            <h1 className="text-2xl font-bold text-green-600 select-none">Maaz LMS</h1>
 
             <div className="flex-1">
               <h1 className="md:text-home-heading-large text-home-heading-small font-extrabold text-gray-800 leading-tight">Privacy Policy</h1>

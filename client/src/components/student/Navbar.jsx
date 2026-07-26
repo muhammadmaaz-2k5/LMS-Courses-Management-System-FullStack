@@ -45,11 +45,11 @@ const Navbar = () => {
 				isCourseListPage ? "bg-white" : "bg-green-100/70"
 			} `}
 		>
-			<img onClick={()=>navigate('/')}
-				src={assets.logo}
-				alt="Logo"
-				className="w-28 lg:w-32  cursor-pointer"
-			/>
+			<h1 onClick={()=>navigate('/')}
+				className="text-xl lg:text-2xl font-bold text-green-600 cursor-pointer select-none"
+			>
+				Maaz LMS
+			</h1>
 			<div className="hidden md:flex items-center gap-5 text-gray-500">
 				<div className="flex items-center gap-5">
 					<Logger/>
