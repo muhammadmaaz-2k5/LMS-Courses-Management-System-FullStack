@@ -12,15 +12,15 @@ export const updateRoleToEducator = async (req, res) => {
             return res.json({ success: false, message: "Unauthorized - please log in again" })
         }
 
-        await clerkClient.users.updateUserMetadata(userId, {
+        const updated = await clerkClient.users.updateUserMetadata(userId, {
             publicMetadata: {
                 role: 'educator',
             }
         })
 
-        res.json({ success: true, message: 'You can publish a course now' })
+        res.json({ success: true, message: 'You can publish a course now', role: updated.publicMetadata?.role })
     } catch (error) {
-        console.error("updateRoleToEducator error:", error.message)
+        console.error("updateRoleToEducator error:", error.status, error.message, error.errors)
         res.json({ success: false, message: error.message })
     }
 }
